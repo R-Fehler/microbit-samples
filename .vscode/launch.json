@@ -25,7 +25,7 @@
             },
             "windows": {
                 "MIMode": "gdb",
-                "MIDebuggerPath": "C:\\Program Files (x86)\\GNU Tools Arm Embedded\\4.9 2015q2\\bin\\arm-none-eabi-gdb.exe",
+                "MIDebuggerPath": "C:\\yotta\\gcc\\bin\\arm-none-eabi-gdb.exe",
                 "debugServerPath": "C:\\yotta\\workspace\\Scripts\\pyocd-gdbserver.exe",
                 "debugServerArgs": "--persist -t nrf51 -bh -r",
                 "setupCommands": [

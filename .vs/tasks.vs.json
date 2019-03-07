@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "tasks": [
+    {
+      "appliesTo": "/",
+      "taskName": "Task-microbit-samples",
+      "type": "launch"
+    },
+    {
+      "taskName": "Task-launch.vs",
+      "appliesTo": ".vs/launch.vs.json",
+      "type": "launch"
+    }
+  ]
+}
