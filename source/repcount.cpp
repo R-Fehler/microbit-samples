@@ -42,7 +42,7 @@ void initrepcount() {
 	uBit.accelerometer.setRange(4);
 	uBit.accelerometer.setPeriod(20);
 }
-int repcount(int& input, uint32_t threshold = 1300000) {
+int repcount(int& input,int& inputterm, uint32_t threshold) {
 	//ToDo Calibration reps only for first set of exersice id //warmup
 
 	const int sizefilter = 20;
@@ -105,7 +105,8 @@ int repcount(int& input, uint32_t threshold = 1300000) {
 			}
 		}
 		uBit.sleep(20);
-		if (norepcnt >= nr_noreps) {
+		if (norepcnt >= nr_noreps and 1 == inputterm) {
+			inputterm = 0;
 			return repcnt;
 		}
 		i++;

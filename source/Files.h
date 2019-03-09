@@ -15,6 +15,6 @@ int settingsReadNumber(ManagedString name);
 void appendLine(ManagedString fn, ManagedString t);
 void serial_to_file(ManagedString fn);
 void readtoBLE(ManagedString fn);
-void remove_file(ManagedString fn);
+int remove_file(ManagedString fn);
 ManagedString read_to_string(ManagedString fn);
 #endif  // !MYFILES

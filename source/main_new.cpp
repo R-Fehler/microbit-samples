@@ -6,9 +6,9 @@
 #include "repcount.h"
 #define INCREMENT_A 10
 #define INCREMENT_B 1
-//#define READSERIAL
+#define READSERIAL
 //#define TESTREMOVE
-#define BLETEST
+//#define BLETEST
 MicroBit uBit;
 MicroBitUARTService *uart;
 
@@ -18,6 +18,7 @@ Set meinsatz;
 ManagedString delimiter("\n");
 ManagedString setting;
 int inputBuff = 0;
+int inputterm = 0;
 int terminator = 0;
 int connected = 0;
 
@@ -31,7 +32,9 @@ void onDisconnected(MicroBitEvent) {
   uBit.display.scroll("D");
   connected = 0;
 }
-
+void term_input(MicroBitEvent) {
+	inputterm = 1;
+}
 void printfile(MicroBitEvent e) { readToSerial(ManagedString(filename)); }
 void sendfile(MicroBitEvent e) { readtoBLE(filename); }
 
@@ -39,7 +42,7 @@ int int_from_serial() {
   return atoi(uBit.serial.readUntil(delimiter).toCharArray());
 }
 
-ManagedString string_from_serial() { return uBit.serial.readUntil(delimiter); }
+ManagedString string_from_serial() { return uBit.serial.readUntil(delimiter,SYNC_SPINWAIT); }
 void inputButton(MicroBitEvent e) {
   inputBuff = 0;
   if (e.source == MICROBIT_ID_BUTTON_A) {
@@ -129,14 +132,58 @@ int input(char message) {
 	uBit.sleep(200);
 	return ret;
 }
+///*time in 1/10 sekunden
+int input(int time, int previous_set_id) {
+	int ret = previous_set_id;
+	int i=0;
+	while (0 == uBit.buttonAB.isPressed() and 0 == uBit.io.P2.isTouched() and (i<time)) {
+		ret = ret + inputBuff;
+		inputBuff = 0;
+		// uBit.display.printAsync(ret);
+		uBit.display.printAsync(twodigit.createImage(ret));
+		uBit.sleep(100);
+		i++;
+		//    uBit.display.clear();
+	}
 
+	return ret;
+}
 void serial_input(MicroBitEvent e) {
   ManagedString buffer;
   buffer = string_from_serial();
   uBit.serial.printf("input: %s", buffer.toCharArray());
   // meinsatz.set_name(buffer);
 }
+void setloop() {
+	while (1) {
+		// prüfe ob Set Loop verlassen werden soll.
+		if (terminator == 1) {
+			terminator = 0;
+			return;
+		}
+		uBit.display.scroll("ID");
+		meinsatz.set_ID(input(100, meinsatz.get_ID()));
+		uBit.sleep(500);
+		meinsatz.set_name(read_to_string(ManagedString(meinsatz.get_ID())));
+		uBit.display.scroll(meinsatz.get_name());
+		uBit.sleep(500);
+		uBit.display.scroll("Kg");
+		meinsatz.set_weight(input(100, meinsatz.get_weight()));
 
+		uBit.sleep(500);
+		uBit.display.scroll("WDH");
+		meinsatz.set_reps(repcount(inputBuff,inputterm));
+		uBit.sleep(500);
+		uBit.display.clear();
+
+
+		meinsatz.write_to_file(filename);  // schreibe den Satz ins file
+		uBit.sleep(500);
+		
+
+	}
+
+}
 void terminate(MicroBitEvent e) { terminator = 1; }
 int main() {
   // Initialise the micro:bit runtime.
@@ -148,12 +195,15 @@ int main() {
   Key Values speichern für Trainingsmittelkatalog
   */
   uBit.init();
+  uBit.serial.baud(9600);
+  uBit.serial.send("alive");
+  initrepcount();
   filename = "log.csv";  // file to store the training log
   uint8_t *stor;  // storing the setting if microbit has started , Warning
                   // uninitialized
   *stor = 1;      // dereferenced ptr. inhalt ist 1
   setting = "fileexist";  // name des settings,storage key value pair
-  uBit.serial.eventOn(delimiter);
+  
 
   uBit.messageBus.listen(MICROBIT_ID_BLE, MICROBIT_BLE_EVT_CONNECTED,
                          onConnected);  // entscheide ob eingabe über ble
@@ -168,18 +218,17 @@ int main() {
                          inputButton);
   uBit.messageBus.listen(MICROBIT_ID_BUTTON_AB, MICROBIT_BUTTON_EVT_LONG_CLICK,
                          terminate);
+  uBit.messageBus.listen(MICROBIT_ID_BUTTON_AB, MICROBIT_BUTTON_EVT_CLICK,
+	  term_input);
   //uBit.messageBus.listen(MICROBIT_ID_SERIAL, MICROBIT_SERIAL_EVT_DELIM_MATCH,
     //                     serial_input);
   if (NULL == uBit.storage.get(setting)) {
     uBit.storage.put(setting, stor, sizeof(stor));
     appendLine(filename, ManagedString("date,name,id,weight,reps"));
-  };  // prueft ob der microbit zum ersten mal in das file schreibt.
+  }  // prueft ob der microbit zum ersten mal in das file schreibt.
   // dann wird die header dafür geschrieben. (csv format header)
   uBit.display.scroll("ble");
-  initrepcount();
-  int reps=repcount(inputBuff, 1300000);
-  uBit.sleep(8000);
-  uBit.serial.send(reps);
+   
   // warten auf Verbindung mit Smartphone
   // uBit.serial.send(
   //     ManagedString("gebe die ID, das Gewicht, die Reps, ein! via "
@@ -233,32 +282,39 @@ int main() {
   }
 #endif // BLETEST
 
-  
 
 #ifdef READSERIAL //hella buggy
   ManagedString exercisenumber;
   ManagedString exercisename;
-  uBit.serial.send("!");
+  uBit.serial.printf("starte\n");
   do {
 	  exercisenumber = string_from_serial();
-
+	  uBit.sleep(5);
 	  exercisename = string_from_serial();
-	
-	  remove_file(exercisenumber);
+	  uBit.sleep(5);
+	  if (!remove_file(exercisenumber)) {
+		  uBit.serial.printf("failed to remove file") ;
 
+	  }
 
-	 
+	  
+	uBit.sleep(5);
 
 	  appendLine(exercisenumber, exercisename);
 
-	
+	  uBit.sleep(5);
+
+
 	
   } while (!(exercisenumber == ManagedString("ENDE")));
-  remove_file(ManagedString("ENDE"));
-  uBit.serial.send("ende");
+  if (!remove_file(ManagedString("ENDE"))) {
+	  uBit.serial.printf("failed to remove file");
+	  uBit.serial.send(exercisenumber);
+  }
+  uBit.sleep(5);
+  uBit.serial.printf("microbit ende");
   
-  readToSerial(ManagedString(1));
-  uBit.serial.send("begin loop");
+  uBit.serial.printf("begin loop\n");
   for (int i = 1; i <= 100; i++)
   {
 	  const int x = i;
@@ -282,6 +338,7 @@ int main() {
 #endif // TESTREMOVE
 
 
+  setloop();
   // ansonsten über Hand eingabe
   
   // uBit.serial.printf("gebe datum ein");
@@ -290,31 +347,7 @@ int main() {
   // int_from_serial());
 
   // automatischer / manueller Input der Sets
-  while (1) {
-    uBit.display.scroll("Nr");
-    meinsatz.set_ID(input());
-    uBit.sleep(500);
-	meinsatz.set_name(read_to_string(ManagedString(meinsatz.get_ID())));
-	uBit.display.scroll(meinsatz.get_name());
-	uBit.sleep(500);
-	uBit.display.scroll("Gew");
-    meinsatz.set_weight(input());
-	
-    uBit.sleep(500);
-	uBit.display.scroll("Reps");
-    meinsatz.set_reps(input());
-    uBit.sleep(500);
-    uBit.display.clear();
-   
-
-    meinsatz.write_to_file(filename);  // schreibe den Satz ins file
-    uBit.sleep(500);
-    // prüfe ob Set Loop verlassen werden soll.
-    if (terminator == 1) {
-      terminator = 0;
-      break;
-    }
-  }
+  
   uBit.messageBus.ignore(MICROBIT_ID_BUTTON_A, MICROBIT_EVT_ANY, inputButton);
   uBit.messageBus.ignore(MICROBIT_ID_BUTTON_B, MICROBIT_EVT_ANY, inputButton);
   uBit.messageBus.listen(MICROBIT_ID_BUTTON_A, MICROBIT_BUTTON_EVT_CLICK,

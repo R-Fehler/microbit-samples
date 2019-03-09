@@ -14,7 +14,7 @@
     },
     "gatt_table_size": "0x500",
     "use_accel_lsb": 1,
-    "debug": 1,
+    "debug": 0,
     "heap_debug": 0,
     "display_scroll_speed": 120
   }
