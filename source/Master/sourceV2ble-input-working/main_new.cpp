@@ -3,12 +3,9 @@
 #include "MicroBitUARTService.h"
 #include "Set.h"
 #include "TwoDigitDisplay.h"
-#include "repcount.h"
 #define INCREMENT_A 10
 #define INCREMENT_B 1
-//#define READSERIAL
-//#define TESTREMOVE
-#define BLETEST
+
 MicroBit uBit;
 MicroBitUARTService *uart;
 
@@ -110,26 +107,6 @@ int input(const char *message) {
   return ret;
 }
 
-int input(char message) {
-	int ret = 0;
-	uBit.display.printChar(message);
-	while (0 == uBit.buttonA.isPressed() and 0 == uBit.buttonB.isPressed()) {
-		uBit.sleep(100);
-	}
-
-	while (0 == uBit.buttonAB.isPressed() and 0 == uBit.io.P2.isTouched()) {
-		ret = ret + inputBuff;
-		inputBuff = 0;
-		// uBit.display.printAsync(ret);
-		uBit.display.printAsync(twodigit.createImage(ret));
-		uBit.sleep(60);
-		//    uBit.display.clear();
-	}
-	uBit.display.clear();
-	uBit.sleep(200);
-	return ret;
-}
-
 void serial_input(MicroBitEvent e) {
   ManagedString buffer;
   buffer = string_from_serial();
@@ -160,130 +137,40 @@ int main() {
   uBit.messageBus.listen(MICROBIT_ID_BLE, MICROBIT_BLE_EVT_DISCONNECTED,
                          onDisconnected);
   uart = new MicroBitUARTService(*uBit.ble, 32, 32);  // ble service
-                       // info
+  uBit.display.scroll("UART");                        // info
 
-  uBit.messageBus.listen(MICROBIT_ID_BUTTON_A, MICROBIT_EVT_ANY,
+  uBit.messageBus.listen(MICROBIT_ID_BUTTON_A, MICROBIT_BUTTON_EVT_CLICK,
                          inputButton);
-  uBit.messageBus.listen(MICROBIT_ID_BUTTON_B, MICROBIT_EVT_ANY,
+  uBit.messageBus.listen(MICROBIT_ID_BUTTON_B, MICROBIT_BUTTON_EVT_CLICK,
                          inputButton);
   uBit.messageBus.listen(MICROBIT_ID_BUTTON_AB, MICROBIT_BUTTON_EVT_LONG_CLICK,
                          terminate);
-  //uBit.messageBus.listen(MICROBIT_ID_SERIAL, MICROBIT_SERIAL_EVT_DELIM_MATCH,
-    //                     serial_input);
+  uBit.messageBus.listen(MICROBIT_ID_SERIAL, MICROBIT_SERIAL_EVT_DELIM_MATCH,
+                         serial_input);
   if (NULL == uBit.storage.get(setting)) {
     uBit.storage.put(setting, stor, sizeof(stor));
     appendLine(filename, ManagedString("date,name,id,weight,reps"));
   };  // prueft ob der microbit zum ersten mal in das file schreibt.
   // dann wird die header dafür geschrieben. (csv format header)
-  uBit.display.scroll("ble");
-  initrepcount();
-  int reps=repcount(inputBuff, 1300000);
-  uBit.sleep(8000);
-  uBit.serial.send(reps);
-  // warten auf Verbindung mit Smartphone
+  uBit.display.scroll(ManagedString("BLE!"));
+  uBit.sleep(2000);  // warten auf Verbindung mit Smartphone
   // uBit.serial.send(
   //     ManagedString("gebe die ID, das Gewicht, die Reps, ein! via "
   //                   "buttonsaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
   // uBit.serial.send("datum:");
 
   // wenn Verbunden lese das Datum ein (von Handy App)
-#ifdef BLETEST
-  if (connected == 1)
-  {
-	  uart->send("gebe Name ein");
-	  ManagedString buffer = string_from_ble();
-	  uBit.storage.put("1", (uint8_t*)buffer.toCharArray(), sizeof(buffer.toCharArray()));
-
-	  KeyValuePair* testt = uBit.storage.get("1");
-	  const char * stringname = (const char*)testt->value;
-	  uBit.display.scroll(stringname);
-
-  }
-  //compiles!
-
   if (connected == 1) {
-	  uart->send("gebe Name ein");
-	  ManagedString exercisename = string_from_ble();
-	  uBit.sleep(300);
-	  uart->send("gebe Nr. ein");
-	  ManagedString exercisenumber = string_from_ble();
-	  uBit.sleep(300);
-	  remove_file(exercisenumber);
-
-	  uBit.sleep(300);
-
-	  appendLine(exercisenumber, exercisename);
-	  uBit.sleep(300);
-	  readtoBLE(exercisenumber);
-	  uBit.sleep(300);
-	  uBit.display.scroll(read_to_string(exercisenumber));
+    uart->send(ManagedString("Datum: 3x T,M,J newline"));
+    meinsatz.set_date(atoi(string_from_ble().toCharArray()),
+                      atoi(string_from_ble().toCharArray()),
+                      atoi(string_from_ble().toCharArray()));
+    uart->send(ManagedString("ID, gewicht, reps"));
   }
-
-  if (connected == 1) {
-	  uart->send(ManagedString("Datum: 3x T,M,J newline"));
-	  meinsatz.set_date(atoi(string_from_ble().toCharArray()),
-		  atoi(string_from_ble().toCharArray()),
-		  atoi(string_from_ble().toCharArray()));
-	  uart->send(ManagedString("ID, gewicht, reps"));
-  }
-
-  else {
-	  uBit.display.scroll("Datum:");
-	  meinsatz.set_date(input('T'), input('M'), input('J'));
-  }
-#endif // BLETEST
-
-  
-
-#ifdef READSERIAL //hella buggy
-  ManagedString exercisenumber;
-  ManagedString exercisename;
-  uBit.serial.send("!");
-  do {
-	  exercisenumber = string_from_serial();
-
-	  exercisename = string_from_serial();
-	
-	  remove_file(exercisenumber);
-
-
-	 
-
-	  appendLine(exercisenumber, exercisename);
-
-	
-	
-  } while (!(exercisenumber == ManagedString("ENDE")));
-  remove_file(ManagedString("ENDE"));
-  uBit.serial.send("ende");
-  
-  readToSerial(ManagedString(1));
-  uBit.serial.send("begin loop");
-  for (int i = 1; i <= 100; i++)
-  {
-	  const int x = i;
-	  uBit.serial.printf("%d: ", i);
-	  readToSerial(ManagedString(x));
-	 // uBit.display.scroll(read_to_string(x));
-  }
-  
-	 
-
-#endif // READSERIAL
-
-#ifdef TESTREMOVE
-  ManagedString fn("test");
-  appendLine(fn, ManagedString("das ist ein Test"));
-  readToSerial(fn);
-  remove_file(fn);
-  uBit.serial.send("removed");
-  readToSerial(fn);
-  uBit.serial.send("und?");
-#endif // TESTREMOVE
-
-
   // ansonsten über Hand eingabe
-  
+  else {
+    meinsatz.set_date(input("T"), input("M"), input("J"));
+  }
   // uBit.serial.printf("gebe datum ein");
 
   // meinsatz.set_date(int_from_serial(), int_from_serial(),
@@ -291,21 +178,20 @@ int main() {
 
   // automatischer / manueller Input der Sets
   while (1) {
-    uBit.display.scroll("Nr");
+    uBit.display.scroll(ManagedString("!!"));
     meinsatz.set_ID(input());
     uBit.sleep(500);
-	meinsatz.set_name(read_to_string(ManagedString(meinsatz.get_ID())));
-	uBit.display.scroll(meinsatz.get_name());
-	uBit.sleep(500);
-	uBit.display.scroll("Gew");
+
     meinsatz.set_weight(input());
-	
     uBit.sleep(500);
-	uBit.display.scroll("Reps");
+
     meinsatz.set_reps(input());
     uBit.sleep(500);
     uBit.display.clear();
-   
+    uBit.serial.printf(
+        "gebe name ein! halte AB gedrückt \n um das training zu beenden");
+    uBit.sleep(100);
+    // meinsatz.set_name(string_from_serial());
 
     meinsatz.write_to_file(filename);  // schreibe den Satz ins file
     uBit.sleep(500);

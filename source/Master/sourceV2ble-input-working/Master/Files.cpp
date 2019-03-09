@@ -38,7 +38,7 @@ int settingsReadNumber(ManagedString name) {
 void appendLine(ManagedString fn, ManagedString t) {
   MicroBitFile f(fn);
   f.append(t);
-  f.append("\n");  // oder \n
+  f.append("\r\n");  // oder \n
   f.close();
 }
 
@@ -66,21 +66,4 @@ void serial_to_file(ManagedString fn) {
     f.append(buffc, sizeof(char) * sizeof(buffc));
   }
   f.close();
-}
-
-void remove_file(ManagedString fn)
-{
-	MicroBitFileSystem::defaultFileSystem->remove(fn.toCharArray());
-}
-//Achtung maximal 32 Chars
-ManagedString read_to_string(ManagedString fn)
-{
-	MicroBitFile f(fn);
-	
-	char buf[32];
-	int read = 0;
-	read = f.read(buf, sizeof(buf) * sizeof(char));
-	ManagedString result = ManagedString(buf);
-	f.close();
-	return result;
 }

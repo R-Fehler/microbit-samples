@@ -3,3 +3,6 @@ yotta_targets
 yotta_modules
 .vs
 .git
+/capture.txt
+/sendtest.txt
+/sendtomicrobit.txt
