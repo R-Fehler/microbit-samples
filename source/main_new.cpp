@@ -224,30 +224,72 @@ void serial_input(MicroBitEvent e) {
   // meinsatz.set_name(buffer);
 }
 void setloop() {
-	while (1) {
+
+
+	int loop_case = 0;
+	int oldname;
+	while (true) {
 		// prüfe ob Set Loop verlassen werden soll.
-		if (terminator == 1) {
-			terminator = 0;
-			return;
-		}
+		loop_case = loop_case % 3;
+		switch (loop_case)
+		{
+		case 0:
 		uBit.display.scroll("ID");
-		meinsatz.set_ID(input(100, meinsatz.get_ID()));
+			uBit.display.clear();
+			oldname = meinsatz.get_ID();
+
+			meinsatz.set_ID(input(WAITFORINPUT, meinsatz.get_ID()));
 		uBit.sleep(500);
+			if (oldname != meinsatz.get_ID()) {
+
 		meinsatz.set_name(read_to_string(ManagedString(meinsatz.get_ID())));
-		uBit.display.scroll(meinsatz.get_name());
+				uBit.display.scroll(meinsatz.get_name(), LONGTEXTDELAY);
+			}
+			if (meinsatz.get_name() == ManagedString("")) {
+				meinsatz.set_name(ManagedString("-"));
+			}
 		uBit.sleep(500);
-		uBit.display.scroll("Kg");
-		meinsatz.set_weight(input(100, meinsatz.get_weight()));
+			loop_case++;
+			break;
+		case 1:
+
+			uBit.display.scroll("Kg", LONGTEXTDELAY);
+
+			if (goback != 0) {
+				break;
+			}
+			meinsatz.set_weight(input(WAITFORINPUT, meinsatz.get_weight()));
 
 		uBit.sleep(500);
-		uBit.display.scroll("WDH");
-		meinsatz.set_reps(repcount(inputBuff,inputterm));
+			loop_case += 1 - goback;
+			break;
+
+		case 2:
+			uBit.display.scroll("WDH", LONGTEXTDELAY);
+			if (goback != 0) {
+				break;
+			}
+			meinsatz.set_reps(repcount(inputBuff, inputterm, goback, pause_setting));
 		uBit.sleep(500);
 		uBit.display.clear();
+			loop_case += 1 - goback;
+			break;
+		default:
 
+			break;
+		}
 
+		goback = 0;
+
+		if (terminator == 1) {
+			terminator = 0;
+			break;
+		}
+	}
 		meinsatz.write_to_file(filename);  // schreibe den Satz ins file
 		uBit.sleep(500);
+	return;
+}
 		
 
 	}
