@@ -76,87 +76,144 @@ ManagedString string_from_ble() { return uart->readUntil(delimiter); }
 int input() {
   int ret = 0;
 
-  while (0 == uBit.buttonAB.isPressed() and 0 == uBit.io.P2.isTouched()) {
+	while (true) {
     ret = ret + inputBuff;
     inputBuff = 0;
     // uBit.display.printAsync(ret);
     uBit.display.printAsync(twodigit.createImage(ret));
-    uBit.sleep(60);
+		uBit.sleep(INPUTLAG);
     //    uBit.display.clear();
+		if (inputterm == 1) {
+			inputterm = 0;
+			return ret;
   }
+	}
 
+
+}
+int input(int previous_val) {
+	int ret = previous_val;
+	int i = 0;
+	while (true) {
+		if (inputBuff == 0 and i != 0) {
+			/*if (goback != 0) {
+				return ret;
+			}*/
+			if (inputterm == 1) {
+				inputterm = 0;
   return ret;
 }
-int input(ManagedString message) {
-  int ret = 0;
-  uBit.display.scrollAsync(message);
-  while (0 == uBit.buttonA.isPressed() and 0 == uBit.buttonB.isPressed()) {
-    uBit.sleep(100);
-  }
 
-  while (0 == uBit.buttonAB.isPressed() and 0 == uBit.io.P2.isTouched()) {
+			if (i > DISPLAYTIME) {
+				uBit.display.clear();
+			}
+		}
+		else {
+			i = 0;
     ret = ret + inputBuff;
+			ret = abs(ret);
     inputBuff = 0;
-    // uBit.display.printAsync(ret);
     uBit.display.printAsync(twodigit.createImage(ret));
-    uBit.sleep(60);
-    //    uBit.display.clear();
   }
-
-  return ret;
+		uBit.sleep(INPUTLAG);
+		i++;
+}
 }
 int input(const char *message) {
   int ret = 0;
-  uBit.display.scrollAsync(message);
+	uBit.display.scroll(message);
   while (0 == uBit.buttonA.isPressed() and 0 == uBit.buttonB.isPressed()) {
-    uBit.sleep(100);
+		uBit.sleep(INPUTLAG);
   }
 
-  while (0 == uBit.buttonAB.isPressed() and 0 == uBit.io.P2.isTouched()) {
+	int i = 0;
+	while ((true)) {
+		if (inputBuff == 0 and i != 0) {
+			if (goback != 0) {
+				return ret;
+			}
+			if (inputterm == 1) {
+				inputterm = 0;
+				return ret;
+			}
+
+			if (i > DISPLAYTIME) {
+				uBit.display.clear();
+			}
+		}
+		else {
+			i = 0;
     ret = ret + inputBuff;
+			ret = abs(ret);
     inputBuff = 0;
-    // uBit.display.printAsync(ret);
     uBit.display.printAsync(twodigit.createImage(ret));
-    uBit.sleep(60);
-    //    uBit.display.clear();
   }
-  uBit.display.clear();
-  uBit.sleep(200);
-  return ret;
+		uBit.sleep(INPUTLAG);
+		i++;
 }
+}
+
 
 int input(char message) {
 	int ret = 0;
 	uBit.display.printChar(message);
 	while (0 == uBit.buttonA.isPressed() and 0 == uBit.buttonB.isPressed()) {
-		uBit.sleep(100);
+		uBit.sleep(INPUTLAG);
 	}
 
-	while (0 == uBit.buttonAB.isPressed() and 0 == uBit.io.P2.isTouched()) {
+	while (true) {
 		ret = ret + inputBuff;
 		inputBuff = 0;
 		// uBit.display.printAsync(ret);
 		uBit.display.printAsync(twodigit.createImage(ret));
-		uBit.sleep(60);
+		uBit.sleep(INPUTLAG);
 		//    uBit.display.clear();
+		if (inputterm == 1) {
+			inputterm = 0;
+			return ret;
 	}
-	uBit.display.clear();
-	uBit.sleep(200);
-	return ret;
+	}
 }
 ///*time in 1/10 sekunden
-int input(int time, int previous_set_id) {
-	int ret = previous_set_id;
-	int i=0;
-	while (0 == uBit.buttonAB.isPressed() and 0 == uBit.io.P2.isTouched() and (i<time)) {
+int input(int time, int previous_val) {
+	int ret = previous_val;
+	int i = 0;
+	while ((i < time)) {
+		if (inputBuff == 0 and i != 0) {
+			if (goback != 0) {
+				return ret;
+			}
+			if (inputterm == 1) {
+				inputterm = 0;
+				return ret;
+			}
+
+			if (i > DISPLAYTIME) {
+	uBit.display.clear();
+			}
+}
+		else {
+			i = 0;
 		ret = ret + inputBuff;
+			ret = abs(ret);
+			// uBit.display.printAsync(ret);
 		inputBuff = 0;
-		// uBit.display.printAsync(ret);
 		uBit.display.printAsync(twodigit.createImage(ret));
-		uBit.sleep(100);
+		}
+		uBit.sleep(INPUTLAG);
+		//if (goback != 0) {
+		//	return ret;
+		//}
+		//if (inputterm == 1) {
+		//	inputterm = 0;
+		//	return ret;
+		//}
 		i++;
-		//    uBit.display.clear();
 	}
+		//    uBit.display.clear();
+
+	uBit.io.P1.setDigitalValue(0);
+	uBit.io.P8.setDigitalValue(0);
 
 	return ret;
 }
