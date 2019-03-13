@@ -1,6 +1,8 @@
 #if !defined(TWODIGITDISPLAY_H)
 #define TWODIGITDISPLAY_H
 #include "MicroBitImage.h"
+#include "MicroBit.h"
+extern MicroBit uBit;
 class TwoDigitDisplay {
  private:
   const uint8_t bin_digits_second[10][5]{

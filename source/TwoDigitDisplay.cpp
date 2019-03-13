@@ -1,5 +1,5 @@
 #include "TwoDigitDisplay.h"
-#include "MicroBitImage.h"
+
 #define ROWS 5
 #define ALPHA 255
 TwoDigitDisplay::TwoDigitDisplay() {
@@ -12,6 +12,24 @@ TwoDigitDisplay::TwoDigitDisplay() {
 MicroBitImage TwoDigitDisplay::createImage(int value) {
   // 5x5 led matrix
   uint8_t buffer[25] = {0};
+  if (value > 99) {
+	  //leds on for the third
+	  uBit.io.P1.setDigitalValue(1);
+	  if (value > 199) {
+		  uBit.io.P8.setDigitalValue(1);
+	  }
+  
+	  
+  }
+  if (value < 200) {
+	  uBit.io.P8.setDigitalValue(0);
+	  if (value < 100) {
+	  uBit.io.P1.setDigitalValue(0);
+
+	  }
+
+  }
+  value = value % 100;
   uint8_t first = value / 10;   // first digit
   uint8_t second = value % 10;  // second digit
 
