@@ -291,11 +291,52 @@ void setloop() {
 	return;
 }
 		
+void catalog_read(MicroBitEvent) {
+	ManagedString exercisenumber;
+	ManagedString exercisename;
+	uBit.serial.printf("starte\n");
+	uBit.display.scroll("usb input");
+	do {
+		exercisenumber = string_from_serial();
+		uBit.sleep(5);
+		exercisename = string_from_serial();
+		uBit.sleep(5);
+		if (!remove_file(exercisenumber)) {
+			uBit.serial.printf("failed to remove file");
 
 	}
 
+
+		uBit.sleep(5);
+
+		appendLine(exercisenumber, exercisename);
+
+		uBit.sleep(5);
+
+
+
+	} while (!(exercisenumber == ManagedString("ENDE")));
+	if (!remove_file(ManagedString("ENDE"))) {
+		uBit.serial.printf("failed to remove file");
+		uBit.serial.send(exercisenumber);
 }
-void terminate(MicroBitEvent e) { terminator = 1; }
+	uBit.sleep(5);
+	uBit.serial.printf("microbit ende");
+	uBit.display.scrollAsync("mitte");
+	uBit.serial.printf("begin loop\n");
+	uBit.display.scroll("check 1:");
+	uBit.display.scroll(read_to_string(ManagedString("1")));
+	for (int i = 1; i <= 100; i++)
+	{
+		const int x = i;
+		uBit.serial.printf("%d: ", i);
+		readToSerial(ManagedString(x));
+		// uBit.display.scroll(read_to_string(x));
+	}
+	uBit.display.scrollAsync("ende");
+
+
+}
 int main() {
   // Initialise the micro:bit runtime.
   // delimiter = "\n";
