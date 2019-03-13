@@ -337,6 +337,32 @@ void catalog_read(MicroBitEvent) {
 
 
 }
+void onConnected(MicroBitEvent) {
+	uBit.display.scroll("C");
+
+	connected = 1;
+}
+
+void onDisconnected(MicroBitEvent) {
+	uBit.display.scroll("D");
+	connected = 0;
+}
+void term_input(MicroBitEvent) {
+	uBit.display.printCharAsync('>', 200);
+	inputterm = 1;
+}
+void terminate(MicroBitEvent e) {
+	terminator = 1;
+	uBit.display.printCharAsync('*', 200);
+}
+void printfile_toserial(MicroBitEvent e) { readToSerial(ManagedString(filename)); }
+void ble_sendfile(MicroBitEvent e) { readtoBLE(filename); }
+void go_back(MicroBitEvent e) {
+	goback = 2;
+	uBit.display.printCharAsync('<', 200);
+}
+
+}
 int main() {
   // Initialise the micro:bit runtime.
   // delimiter = "\n";
