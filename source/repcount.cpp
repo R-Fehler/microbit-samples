@@ -42,27 +42,34 @@ void initrepcount() {
 	uBit.accelerometer.setRange(4);
 	uBit.accelerometer.setPeriod(20);
 }
-int repcount(int& input,int& inputterm, uint32_t threshold) {
+int repcount(int& input,int& inputterm,int& goback, int& noreps_time_till_next , uint32_t threshold) {
 	//ToDo Calibration reps only for first set of exersice id //warmup
-
+	int dptime = DPTIMEUNTILFIRSTREP;
 	const int sizefilter = 20;
+	const int max_filter_div = 4;
+	const int max_sizefilter = sizefilter / max_filter_div;
+	uint32_t threshold_start = threshold;
 	uint32_t filterbuf[sizefilter] = { 0 };
 	uint32_t i = 0;
 	uint32_t sum = 0;
 	uint32_t res = 0;
-	uint32_t max = 0;
-	int multi = 4;
-	int divide = 5;
+	uint32_t max[max_sizefilter] = { threshold };
+	uint32_t maxaverage = threshold;
+	uint32_t sum_max = 0;
+	int multi = 9;
+	int divide = 10;
 	const int noreps_threshold = 1200000;
-	const int nr_noreps = 750;
+	const int noreps_dp = 250;
 	int norepcnt = 0;
 	bool rep = false;
 	int repcnt = 0;
 	//max times 5/4;
+	uBit.display.printAsync(twodigit.createImage(repcnt));
 	while (true)
 	{
 
 		accel = uBit.accelerometer.getSample();
+		
 		filterbuf[i%sizefilter] = force(accel);
 		sum = 0;
 		for (size_t j = 0; j < sizeof(filterbuf) / sizeof(uint32_t); j++)
@@ -74,29 +81,48 @@ int repcount(int& input,int& inputterm, uint32_t threshold) {
 
 	   // lowpass += (buffer - lowpass) / alpha;
 		res = (sum / sizefilter);
-		max = maxcomp(max, res);
+		uBit.serial.printf("%d\n", res);
+		max[i%max_sizefilter] = maxcomp(max[i%max_sizefilter], res);
 		//uBit.serial.printf("%d\n", max);
-		threshold = maxcomp(threshold, (max * multi / divide));
+		sum_max = 0;
+		for (size_t j = 0; j < sizeof(max) / sizeof(uint32_t); j++)
+		{
+			sum_max += max[j];
+		}
+		maxaverage = (sum_max / max_sizefilter);
+		if (i%(max_sizefilter*max_filter_div*MAX_FILTER_REDUCTION_CONSTANT)==0) {
+			max[i%max_sizefilter] = threshold_start;
+		}
+
+
+
+		threshold = maxcomp(threshold, (maxaverage * multi / divide));
+	/*	uBit.serial.printf("maxaverage: %d\n", maxaverage);
+		uBit.serial.printf("res:        %d\n", res);
+		uBit.serial.printf("threshold:  %d\n", threshold);
+*/
 		//uBit.serial.printf("threshold: %d\n", threshold);
 		//uBit.serial.printf("res:       %d\n", res);
 		if (input != 0) {
 			repcnt = repcnt + (input);
+			repcnt = abs(repcnt);
 			uBit.serial.printf("rpcnt:%d", repcnt);
 			uBit.display.printAsync(twodigit.createImage(repcnt));
+			norepcnt = 0;
 			input = 0;
 		}
 		if (res > threshold) {
 			if (rep == false) {
 				rep = true;
 				repcnt++;
-				uBit.serial.printf("REEEEEP: %d\n", repcnt);
+				uBit.serial.printf("\t\t REEEEEP");
 				uBit.display.printAsync(twodigit.createImage(repcnt));
-				
+				norepcnt = 0;
 			}
 
 		}
 		if (res < threshold) {
-			if (repcnt >= 1 and res<noreps_threshold) {
+			if (res<noreps_threshold) {
 				norepcnt++;
 			}
 			
@@ -105,13 +131,44 @@ int repcount(int& input,int& inputterm, uint32_t threshold) {
 			}
 		}
 		uBit.sleep(20);
-		if (norepcnt >= nr_noreps and 1 == inputterm) {
+		if (norepcnt > noreps_dp) {
+
+			uBit.display.clear();
+		}
+			
+
+		if (goback != 0) {
+			return repcnt;
+			uBit.io.P1.setDigitalValue(0);
+			uBit.io.P8.setDigitalValue(0);
+		}
+		if (norepcnt >= noreps_time_till_next or 1 == inputterm) {
 			inputterm = 0;
+			uBit.io.P1.setDigitalValue(0);
+			uBit.io.P8.setDigitalValue(0);
+			if (norepcnt >= noreps_time_till_next) {
+
+			uBit.display.printChar('|');
+			for (size_t i = 0; i < 10; i++)
+			{
+
+			uBit.display.rotateTo(MICROBIT_DISPLAY_ROTATION_90);
+			uBit.sleep(500);
+			uBit.display.rotateTo(MICROBIT_DISPLAY_ROTATION_0);
+			uBit.sleep(500);
+			}
+			uBit.display.clear();
+			}
 			return repcnt;
 		}
 		i++;
+	
 
 	}
+	
+	
+
+	
 }
 	/* while (1) {
 	   buffer = uBit.accelerometer.getSample();

@@ -1,7 +1,7 @@
 {
   "microbit-dal": {
     "bluetooth": {
-      "enabled": 1,
+      "enabled": 0,
       "pairing_mode": 0,
       "private_addressing": 0,
       "open": 1,
@@ -12,10 +12,10 @@
       "event_service": 0,
       "device_info_service": 1
     },
-    "gatt_table_size": "0x500",
+    "gatt_table_size": "0x400",
     "use_accel_lsb": 1,
     "debug": 0,
     "heap_debug": 0,
-    "display_scroll_speed": 120
+    "display_scroll_speed": 100
   }
 }
