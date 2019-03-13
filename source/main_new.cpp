@@ -48,9 +48,16 @@ void inputButton(MicroBitEvent e) {
   if (e.source == MICROBIT_ID_BUTTON_A) {
     if (e.value == MICROBIT_BUTTON_EVT_CLICK)
       inputBuff = inputBuff + INCREMENT_A;
-    if (e.value == MICROBIT_BUTTON_EVT_HOLD)
+		if (e.value == MICROBIT_BUTTON_EVT_HOLD) {
+			inputBuff = inputBuff - INCREMENT_A;
+			uBit.sleep(300);
+			while (uBit.buttonA.isPressed()) {
+
+				uBit.sleep(150);
       inputBuff = inputBuff - INCREMENT_A;
   }
+		}
+	}
   if (e.source == MICROBIT_ID_BUTTON_B) {
     if (e.value == MICROBIT_BUTTON_EVT_CLICK)
       inputBuff = inputBuff + INCREMENT_B;
