@@ -1,0 +1,599 @@
+cmake_minimum_required(VERSION 3.12)
+project(microbit_samples)
+
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(source)
+include_directories(yotta_modules/ble/)
+include_directories(yotta_modules/ble/)
+include_directories(yotta_modules/ble-nrf51822/source)
+include_directories(yotta_modules/ble-nrf51822/source/btle)
+include_directories(yotta_modules/ble-nrf51822/source/btle/custom)
+include_directories(yotta_modules/ble-nrf51822/source/common)
+include_directories(yotta_modules/mbed-classic/api)
+include_directories(yotta_modules/mbed-classic/hal)
+include_directories(yotta_modules/mbed-classic/targets/cmsis)
+include_directories(yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/Lib/nordic_sdk)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/Lib/nordic_sdk/components)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/Lib/nordic_sdk/components/libraries)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/Lib/nordic_sdk/components/libraries/crc16)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/Lib/nordic_sdk/components/libraries/scheduler)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/Lib/nordic_sdk/components/libraries/util)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_ARCH_BLE)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_DELTA_DFCM_NNN40)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_HRM1017)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51822_MKIT)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51822_SBKIT)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51822_Y5_MBUG)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51_DK)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51_DONGLE)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51_MICROBIT)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_RBLAB_BLENANO)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_RBLAB_NRF51822)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_SEEED_TINY_BLE)
+include_directories(yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_WALLBOT_BLE)
+include_directories(yotta_modules/microbit/inc)
+include_directories(yotta_modules/microbit-dal/inc)
+include_directories(yotta_modules/microbit-dal/inc/bluetooth)
+include_directories(yotta_modules/microbit-dal/inc/core)
+include_directories(yotta_modules/microbit-dal/inc/drivers)
+include_directories(yotta_modules/microbit-dal/inc/platform)
+include_directories(yotta_modules/microbit-dal/inc/types)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/ble_radio_notification)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/ble_services/ble_dfu)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/common)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/device_manager)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/device_manager/config)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/device)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/ble_flash)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/delay)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/hal)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/pstorage)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/pstorage/config)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/hci_transport)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/crc16)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/experimental_section_vars)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/fds)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/fstorage)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/hci)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/scheduler)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/timer)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/common/softdevice_handler)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130)
+include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers)
+
+add_executable(microbit_samples
+        source/Files.cpp
+        source/Files.h
+        source/main_new.cpp
+        source/repcount.cpp
+        source/repcount.h
+        source/Set.cpp
+        source/Set.h
+        source/TwoDigitDisplay.cpp
+        source/TwoDigitDisplay.h
+        yotta_modules/ble/ble/services/BatteryService.h
+        yotta_modules/ble/ble/services/DeviceInformationService.h
+        yotta_modules/ble/ble/services/DFUService.h
+        yotta_modules/ble/ble/services/EddystoneConfigService.h
+        yotta_modules/ble/ble/services/EddystoneService.h
+        yotta_modules/ble/ble/services/EnvironmentalService.h
+        yotta_modules/ble/ble/services/HealthThermometerService.h
+        yotta_modules/ble/ble/services/HeartRateService.h
+        yotta_modules/ble/ble/services/iBeacon.h
+        yotta_modules/ble/ble/services/LinkLossService.h
+        yotta_modules/ble/ble/services/UARTService.h
+        yotta_modules/ble/ble/services/URIBeaconConfigService.h
+        yotta_modules/ble/ble/BLE.h
+        yotta_modules/ble/ble/blecommon.h
+        yotta_modules/ble/ble/BLEInstanceBase.h
+        yotta_modules/ble/ble/BLEProtocol.h
+        yotta_modules/ble/ble/CallChainOfFunctionPointersWithContext.h
+        yotta_modules/ble/ble/CharacteristicDescriptorDiscovery.h
+        yotta_modules/ble/ble/deprecate.h
+        yotta_modules/ble/ble/DiscoveredCharacteristic.h
+        yotta_modules/ble/ble/DiscoveredCharacteristicDescriptor.h
+        yotta_modules/ble/ble/DiscoveredService.h
+        yotta_modules/ble/ble/FunctionPointerWithContext.h
+        yotta_modules/ble/ble/Gap.h
+        yotta_modules/ble/ble/GapAdvertisingData.h
+        yotta_modules/ble/ble/GapAdvertisingParams.h
+        yotta_modules/ble/ble/GapEvents.h
+        yotta_modules/ble/ble/GapScanningParams.h
+        yotta_modules/ble/ble/GattAttribute.h
+        yotta_modules/ble/ble/GattCallbackParamTypes.h
+        yotta_modules/ble/ble/GattCharacteristic.h
+        yotta_modules/ble/ble/GattClient.h
+        yotta_modules/ble/ble/GattServer.h
+        yotta_modules/ble/ble/GattServerEvents.h
+        yotta_modules/ble/ble/GattService.h
+        yotta_modules/ble/ble/SafeBool.h
+        yotta_modules/ble/ble/SecurityManager.h
+        yotta_modules/ble/ble/ServiceDiscovery.h
+        yotta_modules/ble/ble/UUID.h
+        yotta_modules/ble/source/services/DFUService.cpp
+        yotta_modules/ble/source/services/UARTService.cpp
+        yotta_modules/ble/source/services/URIBeaconConfigService.cpp
+        yotta_modules/ble/source/BLE.cpp
+        yotta_modules/ble/source/DiscoveredCharacteristic.cpp
+        yotta_modules/ble/source/GapScanningParams.cpp
+        yotta_modules/ble-nrf51822/source/btle/custom/custom_helper.cpp
+        yotta_modules/ble-nrf51822/source/btle/custom/custom_helper.h
+        yotta_modules/ble-nrf51822/source/btle/btle.cpp
+        yotta_modules/ble-nrf51822/source/btle/btle.h
+        yotta_modules/ble-nrf51822/source/btle/btle_advertising.cpp
+        yotta_modules/ble-nrf51822/source/btle/btle_advertising.h
+        yotta_modules/ble-nrf51822/source/btle/btle_discovery.cpp
+        yotta_modules/ble-nrf51822/source/btle/btle_discovery.h
+        yotta_modules/ble-nrf51822/source/btle/btle_gap.cpp
+        yotta_modules/ble-nrf51822/source/btle/btle_gap.h
+        yotta_modules/ble-nrf51822/source/btle/btle_security.cpp
+        yotta_modules/ble-nrf51822/source/btle/btle_security.h
+        yotta_modules/ble-nrf51822/source/common/ansi_escape.h
+        yotta_modules/ble-nrf51822/source/common/assertion.h
+        yotta_modules/ble-nrf51822/source/common/binary.h
+        yotta_modules/ble-nrf51822/source/common/ble_error.h
+        yotta_modules/ble-nrf51822/source/common/common.h
+        yotta_modules/ble-nrf51822/source/common/compiler.h
+        yotta_modules/ble-nrf51822/source/nRF5xCharacteristicDescriptorDiscoverer.cpp
+        yotta_modules/ble-nrf51822/source/nRF5xCharacteristicDescriptorDiscoverer.h
+        yotta_modules/ble-nrf51822/source/nRF5xDiscoveredCharacteristic.cpp
+        yotta_modules/ble-nrf51822/source/nRF5xDiscoveredCharacteristic.h
+        yotta_modules/ble-nrf51822/source/nRF5xGap.cpp
+        yotta_modules/ble-nrf51822/source/nRF5xGap.h
+        yotta_modules/ble-nrf51822/source/nRF5xGattClient.cpp
+        yotta_modules/ble-nrf51822/source/nRF5xGattClient.h
+        yotta_modules/ble-nrf51822/source/nRF5xGattServer.cpp
+        yotta_modules/ble-nrf51822/source/nRF5xGattServer.h
+        yotta_modules/ble-nrf51822/source/nRF5xn.cpp
+        yotta_modules/ble-nrf51822/source/nRF5xn.h
+        yotta_modules/ble-nrf51822/source/nRF5xSecurityManager.h
+        yotta_modules/ble-nrf51822/source/nRF5xServiceDiscovery.cpp
+        yotta_modules/ble-nrf51822/source/nRF5xServiceDiscovery.h
+        yotta_modules/ble-nrf51822/source/projectconfig.h
+        yotta_modules/mbed-classic/api/AnalogIn.h
+        yotta_modules/mbed-classic/api/AnalogOut.h
+        yotta_modules/mbed-classic/api/BusIn.h
+        yotta_modules/mbed-classic/api/BusInOut.h
+        yotta_modules/mbed-classic/api/BusOut.h
+        yotta_modules/mbed-classic/api/CallChain.h
+        yotta_modules/mbed-classic/api/CAN.h
+        yotta_modules/mbed-classic/api/can_helper.h
+        yotta_modules/mbed-classic/api/CircularBuffer.h
+        yotta_modules/mbed-classic/api/CThunk.h
+        yotta_modules/mbed-classic/api/DigitalIn.h
+        yotta_modules/mbed-classic/api/DigitalInOut.h
+        yotta_modules/mbed-classic/api/DigitalOut.h
+        yotta_modules/mbed-classic/api/DirHandle.h
+        yotta_modules/mbed-classic/api/Ethernet.h
+        yotta_modules/mbed-classic/api/FileBase.h
+        yotta_modules/mbed-classic/api/FileHandle.h
+        yotta_modules/mbed-classic/api/FileLike.h
+        yotta_modules/mbed-classic/api/FilePath.h
+        yotta_modules/mbed-classic/api/FileSystemLike.h
+        yotta_modules/mbed-classic/api/FunctionPointer.h
+        yotta_modules/mbed-classic/api/I2C.h
+        yotta_modules/mbed-classic/api/I2CSlave.h
+        yotta_modules/mbed-classic/api/InterruptIn.h
+        yotta_modules/mbed-classic/api/InterruptManager.h
+        yotta_modules/mbed-classic/api/LocalFileSystem.h
+        yotta_modules/mbed-classic/api/LowPowerTicker.h
+        yotta_modules/mbed-classic/api/LowPowerTimeout.h
+        yotta_modules/mbed-classic/api/LowPowerTimer.h
+        yotta_modules/mbed-classic/api/mbed.h
+        yotta_modules/mbed-classic/api/mbed_assert.h
+        yotta_modules/mbed-classic/api/mbed_debug.h
+        yotta_modules/mbed-classic/api/mbed_error.h
+        yotta_modules/mbed-classic/api/mbed_interface.h
+        yotta_modules/mbed-classic/api/platform.h
+        yotta_modules/mbed-classic/api/PortIn.h
+        yotta_modules/mbed-classic/api/PortInOut.h
+        yotta_modules/mbed-classic/api/PortOut.h
+        yotta_modules/mbed-classic/api/PwmOut.h
+        yotta_modules/mbed-classic/api/RawSerial.h
+        yotta_modules/mbed-classic/api/rtc_time.h
+        yotta_modules/mbed-classic/api/semihost_api.h
+        yotta_modules/mbed-classic/api/Serial.h
+        yotta_modules/mbed-classic/api/SerialBase.h
+        yotta_modules/mbed-classic/api/SPI.h
+        yotta_modules/mbed-classic/api/SPISlave.h
+        yotta_modules/mbed-classic/api/Stream.h
+        yotta_modules/mbed-classic/api/Ticker.h
+        yotta_modules/mbed-classic/api/Timeout.h
+        yotta_modules/mbed-classic/api/Timer.h
+        yotta_modules/mbed-classic/api/TimerEvent.h
+        yotta_modules/mbed-classic/api/toolchain.h
+        yotta_modules/mbed-classic/api/Transaction.h
+        yotta_modules/mbed-classic/api/wait_api.h
+        yotta_modules/mbed-classic/common/assert.c
+        yotta_modules/mbed-classic/common/board.c
+        yotta_modules/mbed-classic/common/BusIn.cpp
+        yotta_modules/mbed-classic/common/BusInOut.cpp
+        yotta_modules/mbed-classic/common/BusOut.cpp
+        yotta_modules/mbed-classic/common/CallChain.cpp
+        yotta_modules/mbed-classic/common/CAN.cpp
+        yotta_modules/mbed-classic/common/error.c
+        yotta_modules/mbed-classic/common/Ethernet.cpp
+        yotta_modules/mbed-classic/common/FileBase.cpp
+        yotta_modules/mbed-classic/common/FileLike.cpp
+        yotta_modules/mbed-classic/common/FilePath.cpp
+        yotta_modules/mbed-classic/common/FileSystemLike.cpp
+        yotta_modules/mbed-classic/common/gpio.c
+        yotta_modules/mbed-classic/common/I2C.cpp
+        yotta_modules/mbed-classic/common/I2CSlave.cpp
+        yotta_modules/mbed-classic/common/InterruptIn.cpp
+        yotta_modules/mbed-classic/common/InterruptManager.cpp
+        yotta_modules/mbed-classic/common/LocalFileSystem.cpp
+        yotta_modules/mbed-classic/common/lp_ticker_api.c
+        yotta_modules/mbed-classic/common/mbed_interface.c
+        yotta_modules/mbed-classic/common/pinmap_common.c
+        yotta_modules/mbed-classic/common/RawSerial.cpp
+        yotta_modules/mbed-classic/common/retarget.cpp
+        yotta_modules/mbed-classic/common/rtc_time.c
+        yotta_modules/mbed-classic/common/semihost_api.c
+        yotta_modules/mbed-classic/common/Serial.cpp
+        yotta_modules/mbed-classic/common/SerialBase.cpp
+        yotta_modules/mbed-classic/common/SPI.cpp
+        yotta_modules/mbed-classic/common/SPISlave.cpp
+        yotta_modules/mbed-classic/common/Stream.cpp
+        yotta_modules/mbed-classic/common/Ticker.cpp
+        yotta_modules/mbed-classic/common/ticker_api.c
+        yotta_modules/mbed-classic/common/Timeout.cpp
+        yotta_modules/mbed-classic/common/Timer.cpp
+        yotta_modules/mbed-classic/common/TimerEvent.cpp
+        yotta_modules/mbed-classic/common/us_ticker_api.c
+        yotta_modules/mbed-classic/common/wait_api.c
+        yotta_modules/mbed-classic/hal/analogin_api.h
+        yotta_modules/mbed-classic/hal/analogout_api.h
+        yotta_modules/mbed-classic/hal/buffer.h
+        yotta_modules/mbed-classic/hal/can_api.h
+        yotta_modules/mbed-classic/hal/dma_api.h
+        yotta_modules/mbed-classic/hal/ethernet_api.h
+        yotta_modules/mbed-classic/hal/gpio_api.h
+        yotta_modules/mbed-classic/hal/gpio_irq_api.h
+        yotta_modules/mbed-classic/hal/i2c_api.h
+        yotta_modules/mbed-classic/hal/lp_ticker_api.h
+        yotta_modules/mbed-classic/hal/pinmap.h
+        yotta_modules/mbed-classic/hal/port_api.h
+        yotta_modules/mbed-classic/hal/pwmout_api.h
+        yotta_modules/mbed-classic/hal/rtc_api.h
+        yotta_modules/mbed-classic/hal/serial_api.h
+        yotta_modules/mbed-classic/hal/sleep_api.h
+        yotta_modules/mbed-classic/hal/spi_api.h
+        yotta_modules/mbed-classic/hal/ticker_api.h
+        yotta_modules/mbed-classic/hal/us_ticker_api.h
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_ARM_STD/TARGET_MCU_NORDIC_16K/startup_nRF51822.S
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_ARM_STD/TARGET_MCU_NORDIC_32K/nRF51822.sct
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_ARM_STD/TARGET_MCU_NORDIC_32K/startup_nRF51822.S
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_ARM_STD/TARGET_MCU_NRF51_16K_S110/nRF51822.sct
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_ARM_STD/TARGET_MCU_NRF51_16K_S130/nRF51822.sct
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_ARM_STD/sys.cpp
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_GCC_ARM/TARGET_MCU_NORDIC_32K/NRF51822.ld
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_GCC_ARM/TARGET_MCU_NRF51_16K_S110/NRF51822.ld
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_GCC_ARM/TARGET_MCU_NRF51_16K_S130/NRF51822.ld
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_GCC_ARM/startup_NRF51822.S
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_IAR/TARGET_MCU_NORDIC_16K/nRF51822_QFAA.icf
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_IAR/TARGET_MCU_NORDIC_16K/startup_NRF51822_IAR.S
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_IAR/TARGET_MCU_NORDIC_32K/nRF51822_QFAA.icf
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_IAR/TARGET_MCU_NORDIC_32K/startup_NRF51822_IAR.S
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/TOOLCHAIN_IAR/s110_nrf51822_7.1.0_softdevice.bin
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/cmsis.h
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/cmsis_nvic.c
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/cmsis_nvic.h
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/compiler_abstraction.h
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/nrf.h
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/nrf51.h
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/nrf51_bitfields.h
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/nrf_delay.h
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/system_nrf51.c
+        yotta_modules/mbed-classic/targets/cmsis/TARGET_NORDIC/TARGET_MCU_NRF51822/system_nrf51.h
+        yotta_modules/mbed-classic/targets/cmsis/core_cm0.h
+        yotta_modules/mbed-classic/targets/cmsis/core_cm0plus.h
+        yotta_modules/mbed-classic/targets/cmsis/core_cmFunc.h
+        yotta_modules/mbed-classic/targets/cmsis/core_cmInstr.h
+        yotta_modules/mbed-classic/targets/cmsis/core_cmSimd.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/Lib/nordic_sdk/components/libraries/crc16/crc16.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/Lib/nordic_sdk/components/libraries/scheduler/app_scheduler.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/Lib/nordic_sdk/components/libraries/util/app_error.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/Lib/nordic_sdk/components/libraries/util/app_util.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/Lib/s110_nrf51822_8_0_0/s110_nrf51822_8.0.0_licence_agreement.txt
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/Lib/s110_nrf51822_8_0_0/s110_nrf51822_8.0.0_softdevice.hex
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/Lib/s130_nrf51822_1_0_0/s130_nrf51_1.0.0_licence_agreement.txt
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/Lib/s130_nrf51822_1_0_0/s130_nrf51_1.0.0_softdevice.hex
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_ARCH_BLE/device.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_ARCH_BLE/PinNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_DELTA_DFCM_NNN40/device.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_DELTA_DFCM_NNN40/mbed_overrides.c
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_DELTA_DFCM_NNN40/PinNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_DELTA_DFCM_NNN40/rtc_api.c
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_HRM1017/device.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_HRM1017/PinNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51822_MKIT/device.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51822_MKIT/PinNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51822_SBKIT/device.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51822_SBKIT/PinNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51822_Y5_MBUG/device.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51822_Y5_MBUG/PinNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51_DK/device.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51_DK/PinNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51_DONGLE/device.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51_DONGLE/PinNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51_MICROBIT/device.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_NRF51_MICROBIT/PinNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_RBLAB_BLENANO/device.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_RBLAB_BLENANO/PinNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_RBLAB_NRF51822/device.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_RBLAB_NRF51822/PinNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_SEEED_TINY_BLE/device.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_SEEED_TINY_BLE/PinNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_WALLBOT_BLE/device.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/TARGET_WALLBOT_BLE/PinNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/analogin_api.c
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/gpio_api.c
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/gpio_irq_api.c
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/gpio_object.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/i2c_api.c
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/objects.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/PeripheralNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/pinmap.c
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/port_api.c
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/PortNames.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/pwmout_api.c
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/serial_api.c
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/sleep.c
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/spi_api.c
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/twi_config.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/twi_master.c
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/twi_master.h
+        yotta_modules/mbed-classic/targets/hal/TARGET_NORDIC/TARGET_MCU_NRF51822/us_ticker.c
+        yotta_modules/microbit/inc/MicroBit.h
+        yotta_modules/microbit/source/MicroBit.cpp
+        yotta_modules/microbit-dal/inc/bluetooth/ExternalEvents.h
+        yotta_modules/microbit-dal/inc/bluetooth/MESEvents.h
+        yotta_modules/microbit-dal/inc/bluetooth/MicroBitAccelerometerService.h
+        yotta_modules/microbit-dal/inc/bluetooth/MicroBitBLEManager.h
+        yotta_modules/microbit-dal/inc/bluetooth/MicroBitButtonService.h
+        yotta_modules/microbit-dal/inc/bluetooth/MicroBitDFUService.h
+        yotta_modules/microbit-dal/inc/bluetooth/MicroBitEddystone.h
+        yotta_modules/microbit-dal/inc/bluetooth/MicroBitEventService.h
+        yotta_modules/microbit-dal/inc/bluetooth/MicroBitIOPinService.h
+        yotta_modules/microbit-dal/inc/bluetooth/MicroBitLEDService.h
+        yotta_modules/microbit-dal/inc/bluetooth/MicroBitMagnetometerService.h
+        yotta_modules/microbit-dal/inc/bluetooth/MicroBitPartialFlashingService.h
+        yotta_modules/microbit-dal/inc/bluetooth/MicroBitTemperatureService.h
+        yotta_modules/microbit-dal/inc/bluetooth/MicroBitUARTService.h
+        yotta_modules/microbit-dal/inc/core/ErrorNo.h
+        yotta_modules/microbit-dal/inc/core/EventModel.h
+        yotta_modules/microbit-dal/inc/core/MemberFunctionCallback.h
+        yotta_modules/microbit-dal/inc/core/MicroBitCompat.h
+        yotta_modules/microbit-dal/inc/core/MicroBitComponent.h
+        yotta_modules/microbit-dal/inc/core/MicroBitConfig.h
+        yotta_modules/microbit-dal/inc/core/MicroBitDevice.h
+        yotta_modules/microbit-dal/inc/core/MicroBitFiber.h
+        yotta_modules/microbit-dal/inc/core/MicroBitFont.h
+        yotta_modules/microbit-dal/inc/core/MicroBitHeapAllocator.h
+        yotta_modules/microbit-dal/inc/core/MicroBitListener.h
+        yotta_modules/microbit-dal/inc/core/MicroBitSystemTimer.h
+        yotta_modules/microbit-dal/inc/core/MicroBitUtil.h
+        yotta_modules/microbit-dal/inc/core/NotifyEvents.h
+        yotta_modules/microbit-dal/inc/drivers/DynamicPwm.h
+        yotta_modules/microbit-dal/inc/drivers/FXOS8700.h
+        yotta_modules/microbit-dal/inc/drivers/LSM303Accelerometer.h
+        yotta_modules/microbit-dal/inc/drivers/LSM303Magnetometer.h
+        yotta_modules/microbit-dal/inc/drivers/MAG3110.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitAccelerometer.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitButton.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitCompass.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitCompassCalibrator.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitDisplay.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitFile.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitFileSystem.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitFlash.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitI2C.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitIO.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitLightSensor.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitMatrixMaps.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitMemoryMap.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitMessageBus.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitMultiButton.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitPin.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitQuadratureDecoder.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitRadio.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitRadioDatagram.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitRadioEvent.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitSerial.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitStorage.h
+        yotta_modules/microbit-dal/inc/drivers/MicroBitThermometer.h
+        yotta_modules/microbit-dal/inc/drivers/MMA8653.h
+        yotta_modules/microbit-dal/inc/drivers/TimedInterruptIn.h
+        yotta_modules/microbit-dal/inc/platform/yotta_cfg_mappings.h
+        yotta_modules/microbit-dal/inc/types/CoordinateSystem.h
+        yotta_modules/microbit-dal/inc/types/ManagedString.h
+        yotta_modules/microbit-dal/inc/types/ManagedType.h
+        yotta_modules/microbit-dal/inc/types/MicroBitEvent.h
+        yotta_modules/microbit-dal/inc/types/MicroBitImage.h
+        yotta_modules/microbit-dal/inc/types/PacketBuffer.h
+        yotta_modules/microbit-dal/inc/types/RefCounted.h
+        yotta_modules/microbit-dal/source/bluetooth/MicroBitAccelerometerService.cpp
+        yotta_modules/microbit-dal/source/bluetooth/MicroBitBLEManager.cpp
+        yotta_modules/microbit-dal/source/bluetooth/MicroBitButtonService.cpp
+        yotta_modules/microbit-dal/source/bluetooth/MicroBitDFUService.cpp
+        yotta_modules/microbit-dal/source/bluetooth/MicroBitEddystone.cpp
+        yotta_modules/microbit-dal/source/bluetooth/MicroBitEventService.cpp
+        yotta_modules/microbit-dal/source/bluetooth/MicroBitIOPinService.cpp
+        yotta_modules/microbit-dal/source/bluetooth/MicroBitLEDService.cpp
+        yotta_modules/microbit-dal/source/bluetooth/MicroBitMagnetometerService.cpp
+        yotta_modules/microbit-dal/source/bluetooth/MicroBitPartialFlashingService.cpp
+        yotta_modules/microbit-dal/source/bluetooth/MicroBitTemperatureService.cpp
+        yotta_modules/microbit-dal/source/bluetooth/MicroBitUARTService.cpp
+        yotta_modules/microbit-dal/source/core/MemberFunctionCallback.cpp
+        yotta_modules/microbit-dal/source/core/MicroBitCompat.cpp
+        yotta_modules/microbit-dal/source/core/MicroBitDevice.cpp
+        yotta_modules/microbit-dal/source/core/MicroBitFiber.cpp
+        yotta_modules/microbit-dal/source/core/MicroBitFont.cpp
+        yotta_modules/microbit-dal/source/core/MicroBitHeapAllocator.cpp
+        yotta_modules/microbit-dal/source/core/MicroBitListener.cpp
+        yotta_modules/microbit-dal/source/core/MicroBitSystemTimer.cpp
+        yotta_modules/microbit-dal/source/core/MicroBitUtil.cpp
+        yotta_modules/microbit-dal/source/drivers/DynamicPwm.cpp
+        yotta_modules/microbit-dal/source/drivers/FXOS8700.cpp
+        yotta_modules/microbit-dal/source/drivers/LSM303Accelerometer.cpp
+        yotta_modules/microbit-dal/source/drivers/LSM303Magnetometer.cpp
+        yotta_modules/microbit-dal/source/drivers/MAG3110.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitAccelerometer.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitButton.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitCompass.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitCompassCalibrator.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitDisplay.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitFile.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitFileSystem.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitFlash.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitI2C.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitIO.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitLightSensor.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitMemoryMap.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitMessageBus.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitMultiButton.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitPin.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitQuadratureDecoder.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitRadio.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitRadioDatagram.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitRadioEvent.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitSerial.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitStorage.cpp
+        yotta_modules/microbit-dal/source/drivers/MicroBitThermometer.cpp
+        yotta_modules/microbit-dal/source/drivers/MMA8653.cpp
+        yotta_modules/microbit-dal/source/drivers/TimedInterruptIn.cpp
+        yotta_modules/microbit-dal/source/types/CoordinateSystem.cpp
+        yotta_modules/microbit-dal/source/types/ManagedString.cpp
+        yotta_modules/microbit-dal/source/types/MicroBitEvent.cpp
+        yotta_modules/microbit-dal/source/types/MicroBitImage.cpp
+        yotta_modules/microbit-dal/source/types/PacketBuffer.cpp
+        yotta_modules/microbit-dal/source/types/RefCounted.cpp
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/ble_radio_notification/ble_radio_notification.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/ble_radio_notification/ble_radio_notification.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/ble_services/ble_dfu/ble_dfu.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/ble_services/ble_dfu/ble_dfu.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/common/ble_advdata.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/common/ble_advdata.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/common/ble_conn_params.cpp
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/common/ble_conn_params.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/common/ble_conn_state.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/common/ble_conn_state.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/common/ble_date_time.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/common/ble_gatt_db.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/common/ble_sensor_location.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/common/ble_srv_common.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/common/ble_srv_common.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/device_manager/config/device_manager_cnfg.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/device_manager/device_manager.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/device_manager/device_manager_peripheral.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/id_manager.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/id_manager.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/peer_data.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/peer_data.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/peer_data_storage.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/peer_data_storage.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/peer_database.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/peer_database.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/peer_id.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/peer_id.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/peer_manager_types.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/pm_buffer.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/pm_buffer.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/pm_mutex.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager/pm_mutex.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/device/compiler_abstraction.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/device/nrf.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/device/nrf51.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/device/nrf51_bitfields.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/device/nrf51_deprecated.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/ble_flash/ble_flash.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/ble_flash/ble_flash.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/delay/nrf_delay.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/delay/nrf_delay.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/hal/nrf_ecb.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/hal/nrf_ecb.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/hal/nrf_gpio.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/hal/nrf_gpiote.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/hal/nrf_nvmc.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/hal/nrf_nvmc.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/hal/nrf_temp.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/hal/nrf_wdt.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/pstorage/config/pstorage_platform.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/pstorage/pstorage.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/pstorage/pstorage.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/hci_transport/hci_mem_pool_internal.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/bootloader.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/bootloader_types.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/bootloader_util.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/bootloader_util.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/dfu.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/dfu_app_handler.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/dfu_app_handler.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/dfu_bank_internal.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/dfu_ble_svc.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/dfu_ble_svc_internal.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/dfu_init.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/dfu_init_template.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/dfu_transport.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/dfu_types.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/crc16/crc16.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/crc16/crc16.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/experimental_section_vars/section_vars.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/fds/fds.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/fds/fds.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/fds/fds_config.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/fds/fds_types_internal.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/fstorage/fstorage.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/fstorage/fstorage.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/fstorage/fstorage_config.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/fstorage/fstorage_nosd.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/hci/hci_mem_pool.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/hci/hci_mem_pool.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/scheduler/app_scheduler.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/scheduler/app_scheduler.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/timer/app_timer.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util/app_error.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util/app_error.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util/app_util.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util/app_util_platform.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util/app_util_platform.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util/common.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util/nordic_common.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util/nrf_assert.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util/nrf_assert.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util/sdk_common.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util/sdk_errors.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util/sdk_mapped_flags.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util/sdk_mapped_flags.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util/sdk_os.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/common/softdevice_handler/ant_stack_handler_types.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/common/softdevice_handler/ble_stack_handler_types.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/common/softdevice_handler/softdevice_handler.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/common/softdevice_handler/softdevice_handler.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/common/softdevice_handler/softdevice_handler_appsh.c
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/common/softdevice_handler/softdevice_handler_appsh.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/ble.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/ble_err.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/ble_gap.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/ble_gatt.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/ble_gattc.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/ble_gatts.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/ble_hci.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/ble_l2cap.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/ble_ranges.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/ble_types.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/nrf_error.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/nrf_error_sdm.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/nrf_error_soc.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/nrf_mbr.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/nrf_sdm.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/nrf_soc.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/nrf_svc.h
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/softdevice_assert.h)
