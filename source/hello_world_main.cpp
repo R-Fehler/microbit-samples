@@ -47,43 +47,87 @@ int main()
 
 
 
-//
-        int8_t rslt;
-//        char data[1];
-//        int adress=0x76;
-//       rslt= uBit.i2c.read(2*adress,data,1);
-//       printf("Adress: %d \t rslt: %d \t data= %d\n",adress,rslt,data);
-//       uBit.sleep(15);
+    int8_t rslt;
+    struct bmp280_dev bmp;
+    struct bmp280_config conf;
+    struct bmp280_uncomp_data ucomp_data;
+    uint32_t pres32, pres64;
+    double pres;
+    int32_t temp32;
+    double temp;
 
-        uBit.sleep(1000);
+    /* Map the delay function pointer with the function responsible for implementing the delay */
+    bmp.delay_ms = delay_ms;
 
-        struct bmp280_dev bmp;
+    /* Assign device I2C address based on the status of SDO pin (GND for PRIMARY(0x76) & VDD for SECONDARY(0x77)) */
+    bmp.dev_id = BMP280_I2C_ADDR_PRIM*2;
 
-        /* Map the delay function pointer with the function responsible for implementing the delay */
-        bmp.delay_ms = delay_ms;
+    /* Select the interface mode as I2C */
+    bmp.intf = BMP280_I2C_INTF;
 
-        /* Assign device I2C address based on the status of SDO pin (GND for PRIMARY(0x76) & VDD for SECONDARY(0x77)) */
-        bmp.dev_id = BMP280_I2C_ADDR_PRIM*2;
+    /* Map the I2C read & write function pointer with the functions responsible for I2C bus transfer */
+    bmp.read = i2c_reg_read;
+    bmp.write = i2c_reg_write;
 
-        /* Select the interface mode as I2C */
-        bmp.intf = BMP280_I2C_INTF;
+    /* To enable SPI interface: comment the above 4 lines and uncomment the below 4 lines */
 
-        /* Map the I2C read & write function pointer with the functions responsible for I2C bus transfer */
-        bmp.read = i2c_reg_read;
-        bmp.write = i2c_reg_write;
+    /*
+     * bmp.dev_id = 0;
+     * bmp.read = spi_reg_read;
+     * bmp.write = spi_reg_write;
+     * bmp.intf = BMP280_SPI_INTF;
+     */
+    rslt = bmp280_init(&bmp);
+    print_rslt(" bmp280_init status", rslt);
 
-        /* To enable SPI interface: comment the above 4 lines and uncomment the below 4 lines */
+    /* Always read the current settings before writing, especially when
+     * all the configuration is not modified
+     */
+    rslt = bmp280_get_config(&conf, &bmp);
+    print_rslt(" bmp280_get_config status", rslt);
 
-        /*
-         * bmp.dev_id = 0;
-         * bmp.read = spi_reg_read;
-         * bmp.write = spi_reg_write;
-         * bmp.intf = BMP280_SPI_INTF;
-         */
-        rslt = bmp280_init(&bmp);
-        print_rslt(" bmp280_init status", rslt);
+    /* configuring the temperature oversampling, filter coefficient and output data rate */
+    /* Overwrite the desired settings */
+    conf.filter = BMP280_FILTER_COEFF_8;
+
+    /* Pressure oversampling set at 4x */
+    conf.os_pres = BMP280_OS_16X;
+    conf.os_temp = BMP280_OS_2X;
+
+    /* Setting the output data rate as 1HZ(1000ms) */
+    conf.odr = BMP280_ODR_0_5_MS;
 
 
+    rslt = bmp280_set_config(&conf, &bmp);
+    print_rslt(" bmp280_set_config status", rslt);
+
+    /* Always set the power mode after setting the configuration */
+    rslt = bmp280_set_power_mode(BMP280_NORMAL_MODE, &bmp);
+    print_rslt(" bmp280_set_power_mode status", rslt);
+    while (1)
+    {
+        /* Reading the raw data from sensor */
+        rslt = bmp280_get_uncomp_data(&ucomp_data, &bmp);
+
+
+
+        /* Getting the compensated pressure using 64 bit precision */
+        rslt = bmp280_get_comp_pres_64bit(&pres64, ucomp_data.uncomp_press, &bmp);
+
+        rslt = bmp280_get_comp_temp_32bit(&temp32, ucomp_data.uncomp_temp, &bmp);
+
+
+//        uBit.serial.printf("UP: %ld, P32: %ld, P64: %ld, P64N: %ld, T: %ld \r\n",
+//               ucomp_data.uncomp_press,
+//               pres32,
+//               pres64,
+//               pres64 / 256,
+//               temp32
+//               );
+        uBit.serial.printf("%ld \n", pres64);
+//        uBit.serial.printf("%ld \n",pres64);
+        bmp.delay_ms(1); /* Sleep time between measurements = BMP280_ODR_1000_MS */
+    }
     // Insert your code here!
     uBit.display.scroll("HELLO WORLD! :)");
 
@@ -126,7 +170,7 @@ int main()
     int8_t i2c_reg_write(uint8_t i2c_addr, uint8_t reg_addr, uint8_t *reg_data, uint16_t length)
     {
         int rslt=-1;
-        for (int i = 0; i < length; ++i) {
+        for (int i = 0; i < length; i++) {
             rslt=uBit.i2c.writeRegister(i2c_addr,reg_addr+(i*8),reg_data[i]);//unklar ob reg_addr auch inkrementiert werden muss
         }
         rslt=-rslt;
@@ -152,7 +196,6 @@ int main()
     int rslt=-1;
 
             rslt=uBit.i2c.readRegister(i2c_addr,reg_addr,reg_data,length);
-            uBit.serial.printf("uBit.i2c.readreg reslt: %d", rslt);
             rslt=-rslt;
         /* Implement the I2C read routine according to the target machine. */
         return rslt;
