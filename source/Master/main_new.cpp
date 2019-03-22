@@ -12,6 +12,7 @@
 #define WAITFORINPUT 400
 #define DISPLAYTIME 50
 #define PAUSEMULTIPLIKATOR 2562
+#define QUICKTEST
 //#define BLETEST
 MicroBit uBit;
 MicroBitUARTService *uart;
@@ -21,13 +22,23 @@ Set meinsatz;
 ManagedString delimiter("\n");
 ManagedString first_start;
 ManagedString pausestring("pause");
-
+//TODO : fiber that checks for uart input. or via eventservice. so app sends "send log"
+// and microbit sends logfile to the app. independent of main thread.
+// racecondition check if file is written in setloop() or something
 int pause_setting=PAUSEMULTIPLIKATOR;
 int inputBuff = 0;
 int inputterm = 0;
 int terminator = 0;
 int connected = 0;
 int goback = 0;
+void myFiber(){
+    int i =0;
+    while(true){
+        uBit.serial.printf("fiber: %d \n",i);
+        i++;
+        uBit.sleep(1000);
+    }
+}
 void nothing(MicroBitEvent) {}
 
 int int_from_serial() {
@@ -114,7 +125,7 @@ int input(int previous_val) {
 }
 int input(const char *message) {
 	int ret = 0;
-	uBit.display.scroll(message);
+	uBit.display.print(message);
 	while (0 == uBit.buttonA.isPressed() and 0 == uBit.buttonB.isPressed()) {
 		uBit.sleep(INPUTLAG);
 	}
@@ -218,7 +229,7 @@ void serial_input(MicroBitEvent e) {
 }
 void setloop() {
 
-
+    uBit.serial.printf("setloop()\n");
 	int loop_case = 0;
 	int oldname;
 	while (true) {
@@ -279,7 +290,8 @@ void setloop() {
 			break;
 		}
 	}
-	meinsatz.write_to_file(filename);  // schreibe den Satz ins file
+	uBit.serial.printf("writeSettoFile\n");
+//	meinsatz.write_to_file(filename);  // schreibe den Satz ins file
 	uBit.sleep(500);
 	return;
 }
@@ -348,15 +360,18 @@ void terminate(MicroBitEvent e) {
 	terminator = 1;
 	uBit.display.printCharAsync('*', 200);
 }
+////// allocieren aus unklarem Grund 250-400 bei Aufruf durch listner. nicht wenn in der main
 void printfile_toserial(MicroBitEvent e) { readToSerial(ManagedString(filename)); }
 void ble_sendfile(MicroBitEvent e) { readtoBLE(filename); }
+
 void go_back(MicroBitEvent e) {
 	goback = 2;
 	uBit.display.printCharAsync('<', 200);
 }
 
 void set_pause() {
-	uint8_t pause = (uint8_t)input(" Pausenzeit in Minuten:");
+    uBit.display.scroll("Pause:");
+	uint8_t pause = (uint8_t)input(pause_setting);
 	uint8_t* ptr_pause = &pause;
 	uBit.storage.put(pausestring, ptr_pause, sizeof(pause));
 
@@ -392,6 +407,7 @@ int main() {
 	*/
 	uBit.init();
 	uBit.serial.baud(9600);
+	uart = new MicroBitUARTService(*uBit.ble, 32, 32);  // ble service
 
 	//uBit.serial.attach(handler); if connected to serial do something: print log, read catalog, whatever
 	uBit.io.P0.eventOn(MICROBIT_PIN_EVENT_ON_TOUCH);
@@ -415,10 +431,23 @@ int main() {
 			0, 0, 0, 0, 0,
 	};
 	uBit.display.print(MicroBitImage(5, 5, start));
-
-
+    uBit.sleep(2000);
+    uart->send(ManagedString("Hallo Android"));
+    ManagedString recv = uart->read(5);
+    uBit.display.scroll(recv);
+    deepsleep();
 	initrepcount();
-	filename = "log.csv";  // file to store the training log
+    filename = "log.csv";  // file to store the training log
+    appendLine(filename, ManagedString("TestfileContent"));
+    uBit.sleep(1000);
+    readtoBLE(filename);
+    for (int j = 0; j < 3; ++j) {
+        int res=repcount(inputBuff, inputterm, goback, pause_setting);
+        uart->send(ManagedString(res));
+    }
+
+
+#ifndef QUICKTEST
 	uint8_t storeee = 1;
 	uint8_t *stor = &storeee;  // storing the setting if microbit has started , Warning
 					// uninitialized
@@ -429,10 +458,11 @@ int main() {
 		onConnected);  // entscheide ob eingabe über ble
 	uBit.messageBus.listen(MICROBIT_ID_BLE, MICROBIT_BLE_EVT_DISCONNECTED,
 		onDisconnected);
-	//uart = new MicroBitUARTService(*uBit.ble, 32, 32);  // ble service
 						 // info
 	uBit.display.scroll("b->");
-	input("test");
+//	uart->send(ManagedString("Hallo das ist"));
+	//ManagedString recv = uart->read(5);
+	
 	ManagedString menu;
 	int menuswitch = 0;
 	while (true) {
@@ -482,23 +512,21 @@ int main() {
 
 		uBit.display.scrollAsync(menu);
 
-		if (NULL == uBit.storage.get(pausestring)) {
-			uint8_t pause = (uint8_t)input("maximal Pause:");
-			pause_setting = pause * PAUSEMULTIPLIKATOR;
-			uint8_t* ptr_pause = &pause;
-			uBit.storage.put(pausestring, ptr_pause, sizeof(pause));
-		}
-		else {
-			uBit.display.scroll("Pause:");
-			uint8_t pause = (uint8_t)input(uBit.storage.get(pausestring)->value[0]);
-			pause_setting = pause * PAUSEMULTIPLIKATOR;
-			uint8_t* ptr_pause = &pause;
-			uBit.storage.put(pausestring, ptr_pause, sizeof(pause));
+//		if (NULL == uBit.storage.get(pausestring)) {
+//			uint8_t pause = (uint8_t)input("maximal Pause:");
+//			pause_setting = pause * PAUSEMULTIPLIKATOR;
+//			uint8_t* ptr_pause = &pause;
+//			uBit.storage.put(pausestring, ptr_pause, sizeof(pause));
+//		}
+//		else {
+//			uBit.display.scroll("Pause:");
+//			uint8_t pause = (uint8_t)input(uBit.storage.get(pausestring)->value[0]);
+//			pause_setting = pause * PAUSEMULTIPLIKATOR;
+//			uint8_t* ptr_pause = &pause;
+//			uBit.storage.put(pausestring, ptr_pause, sizeof(pause));
+//
+//		}
 
-		}
-
-	
-	
 
 	break;
 	case 3:
@@ -600,7 +628,7 @@ int main() {
 
 	else {
 
-		uBit.display.scroll("Datum:");
+//		uBit.display.scroll("Datum:");
 		meinsatz.set_date(input("T"), input("M"), input("J"));
 
 	}
@@ -615,26 +643,42 @@ int main() {
 	// int_from_serial());
 
 	// automatischer / manueller Input der Sets
+#endif
+    for (int i = 0; i <10; ++i) {
 
+        ManagedString data=ManagedString("test: ")+ManagedString(i);
+        appendLine(filename,data);
+
+    }
 	uBit.messageBus.ignore(MICROBIT_ID_BUTTON_A, MICROBIT_EVT_ANY, inputButton);
 	uBit.messageBus.ignore(MICROBIT_ID_BUTTON_B, MICROBIT_EVT_ANY, inputButton);
 	uBit.messageBus.listen(MICROBIT_ID_BUTTON_A, MICROBIT_BUTTON_EVT_CLICK,
 		printfile_toserial);  // gebe file via serial aus
-	//uBit.messageBus.listen(MICROBIT_ID_BUTTON_B, MICROBIT_BUTTON_EVT_CLICK,
-	//	ble_sendfile);  // gebe via BLE aus
-	uBit.serial.send("hello");
+	uBit.messageBus.listen(MICROBIT_ID_BUTTON_B, MICROBIT_BUTTON_EVT_CLICK,
+		ble_sendfile);  // gebe via BLE aus //probleme da ein neuer fiber
+		// jedesmal viel Speicher allociert.
 
-	uBit.display.scrollAsync("press reset for new session, i sleep", 80);
-	uBit.sleep(1000);
-	uBit.messageBus.ignore(MICROBIT_ID_BUTTON_A, MICROBIT_BUTTON_EVT_CLICK,
-		printfile_toserial);  // gebe file via serial aus
-	//uBit.messageBus.ignore(MICROBIT_ID_BUTTON_B, MICROBIT_BUTTON_EVT_CLICK,
-	//	ble_sendfile);
+
+//    for (int k = 0; k < 20; ++k) {
+//        uBit.serial.printf("Starte test:");
+//        uBit.sleep(1000);
+//        readtoBLE(filename);
+//        readToSerial(filename);
+//    }
+//	uBit.display.scrollAsync("press reset for new session, i sleep", 80);
+//    create_fiber(myFiber);
+	uBit.sleep(10000);
+//	readtoBLE(filename);
+//	uBit.messageBus.ignore(MICROBIT_ID_BUTTON_A, MICROBIT_BUTTON_EVT_CLICK,
+//		printfile_toserial);  // gebe file via serial aus
+	uBit.messageBus.ignore(MICROBIT_ID_BUTTON_B, MICROBIT_BUTTON_EVT_CLICK,
+		ble_sendfile);
 	// Insert your code here!
 
 	// If main exits, there may still be other fibers running or registered
 	// event handlers etc. Simply release this fiber, which will mean we enter
 	// the scheduler. Worse case, we then sit in the idle task forever, in a
 	// power efficient sleep.
+    uBit.sleep(50000);
 	release_fiber();
 }
