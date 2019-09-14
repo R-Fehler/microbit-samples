@@ -77,6 +77,11 @@ add_executable(microbit_samples
         source/Set.h
         source/TwoDigitDisplay.cpp
         source/TwoDigitDisplay.h
+        source/BMP280.cpp
+        source/BMP280.h
+        source/bmp/bmp280.c
+        source/bmp/bmp280.h
+        source/bmp/bmp280_defs.h
         yotta_modules/ble/ble/services/BatteryService.h
         yotta_modules/ble/ble/services/DeviceInformationService.h
         yotta_modules/ble/ble/services/DFUService.h
