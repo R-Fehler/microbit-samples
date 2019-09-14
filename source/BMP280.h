@@ -18,7 +18,7 @@
 #include "mbed.h"
 #include "MicroBit.h"
 #define _DEBUG
-#define DEFAULT_SLAVE_ADDRESS (0x77 << 1)
+#define DEFAULT_SLAVE_ADDRESS (0x76 * 2)
 
 #ifdef _DEBUG
 extern MicroBit uBit;
