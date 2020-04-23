@@ -70,7 +70,6 @@ int main()
     bmp.write = i2c_reg_write;
 
     /* To enable SPI interface: comment the above 4 lines and uncomment the below 4 lines */
-
     /*
      * bmp.dev_id = 0;
      * bmp.read = spi_reg_read;

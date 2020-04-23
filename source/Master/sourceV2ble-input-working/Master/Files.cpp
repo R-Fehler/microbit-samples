@@ -14,7 +14,7 @@ void readToSerial(ManagedString fn) {
 }
 void readtoBLE(ManagedString fn) {
   MicroBitFile f(fn);
-  char buf[8];
+  char buf[19];
   int read = 0;
   while ((read = f.read(buf, sizeof(buf) * sizeof(char))) > 0) {
     // uBit.serial.send((uint8_t*)buf, read * sizeof(char), SYNC_SPINWAIT);

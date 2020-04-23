@@ -31,21 +31,9 @@ int inputterm = 0;
 int terminator = 0;
 int connected = 0;
 int goback = 0;
-void myFiber(){
-    int i =0;
-    while(true){
-        uBit.serial.printf("fiber: %d \n",i);
-        i++;
-        uBit.sleep(1000);
-    }
-}
-void nothing(MicroBitEvent) {}
 
-int int_from_serial() {
-	return atoi(uBit.serial.readUntil(delimiter).toCharArray());
-}
 
-ManagedString string_from_serial() { return uBit.serial.readUntil(delimiter, SYNC_SPINWAIT); }
+
 void inputButton(MicroBitEvent e) {
 	inputBuff = 0;
 	if (e.source == MICROBIT_ID_BUTTON_A) {

@@ -37,6 +37,10 @@ uint32_t force(const Sample3D& sample) {
 uint32_t maxcomp(uint32_t a, uint32_t b) {
 	return (a <= b) ? b : a;
 }
+uint32_t mincomp(uint32_t a, uint32_t b) {
+	return (a >= b) ? b : a;
+}
+
 
 void initrepcount() {
 	uBit.accelerometer.setRange(4);
@@ -56,6 +60,7 @@ int repcount(int& input,int& inputterm,int& goback, int& noreps_time_till_next ,
 	uint32_t max[max_sizefilter] = { threshold };
 	uint32_t maxaverage = threshold;
 	uint32_t sum_max = 0;
+	//TODO : Testen ob die ganzen uint auf dem heap alocated werden und nicht gefreed
 	int multi = 9;
 	int divide = 10;
 	const int noreps_threshold = 1200000;
@@ -81,7 +86,9 @@ int repcount(int& input,int& inputterm,int& goback, int& noreps_time_till_next ,
 
 	   // lowpass += (buffer - lowpass) / alpha;
 		res = (sum / sizefilter);
+#ifdef  ACCELOREMETERSERIALOUTPUT
 		uBit.serial.printf("%d\n", res);
+#endif
 		max[i%max_sizefilter] = maxcomp(max[i%max_sizefilter], res);
 		//uBit.serial.printf("%d\n", max);
 		sum_max = 0;
@@ -117,6 +124,7 @@ int repcount(int& input,int& inputterm,int& goback, int& noreps_time_till_next ,
 				repcnt++;
 				uBit.serial.printf("\t\t REEEEEP");
 				uBit.display.printAsync(twodigit.createImage(repcnt));
+				uart->send(ManagedString(repcnt));
 				norepcnt = 0;
 			}
 
@@ -159,7 +167,8 @@ int repcount(int& input,int& inputterm,int& goback, int& noreps_time_till_next ,
 			}
 			uBit.display.clear();
 			}
-			return repcnt;
+            uBit.serial.printf("////////");
+            return repcnt;
 		}
 		i++;
 	

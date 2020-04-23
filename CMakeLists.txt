@@ -70,7 +70,7 @@ include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdev
 add_executable(microbit_samples
         source/Files.cpp
         source/Files.h
-        source/main_new.cpp
+        source/main_reimplemented.cpp
         source/repcount.cpp
         source/repcount.h
         source/Set.cpp
