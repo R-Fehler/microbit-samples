@@ -68,20 +68,6 @@ include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdev
 include_directories(yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers)
 
 add_executable(microbit_samples
-        source/Files.cpp
-        source/Files.h
-        source/main_reimplemented.cpp
-        source/repcount.cpp
-        source/repcount.h
-        source/Set.cpp
-        source/Set.h
-        source/TwoDigitDisplay.cpp
-        source/TwoDigitDisplay.h
-        source/BMP280.cpp
-        source/BMP280.h
-        source/bmp/bmp280.c
-        source/bmp/bmp280.h
-        source/bmp/bmp280_defs.h
         yotta_modules/ble/ble/services/BatteryService.h
         yotta_modules/ble/ble/services/DeviceInformationService.h
         yotta_modules/ble/ble/services/DFUService.h
@@ -601,4 +587,40 @@ add_executable(microbit_samples
         yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/nrf_sdm.h
         yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/nrf_soc.h
         yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/nrf_svc.h
-        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/softdevice_assert.h)
+        yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers/softdevice_assert.h
+        #        source/Files.cpp
+        #        source/Files.h
+#        source/main_reimplemented.cpp
+        #        source/repcount.cpp
+        #        source/repcount.h
+        source/TwoDigitDisplay.cpp
+        source/TwoDigitDisplay.h
+        #        source/BMP280.cpp
+        #        source/BMP280.h
+                source/bmp/bmp280.c
+        source/bmp/bmp280.h
+        source/bmp/bmp280_defs.h
+        source/bmp3/bmp3.c
+        source/bmp3/bmp3.h
+        source/bmp3/bmp3_defs.h
+        source/bmp3/self-test/bmp3_selftest.c
+        source/bmp3/self-test/bmp3_selftest.h
+        source/findPeaksLib/
+
+
+#        source/main.cpp
+        source/hello_world_main.cpp
+        source/ExerciseSet.h
+        source/Exercise.cpp
+        source/Exercise.h
+        source/Training.cpp
+        source/Training.h
+        source/MasterParent.cpp
+        source/MasterParent.h
+        source/myUtils.h
+        source/ExerciseSet.cpp source/myInput.h
+        source/myInput.cpp
+        source/sin1.h
+        source/sin1.cpp
+        source/BMP280.cpp
+        source/BMP280.h)

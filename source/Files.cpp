@@ -15,7 +15,7 @@ void readToSerial(ManagedString fn) {
 }
 void readtoBLE(ManagedString fn) {
   MicroBitFile f(fn);
-  char buf[8];
+  char buf[19];
   int read = 0;
   while ((read = f.read(buf, sizeof(buf) * sizeof(char))) > 0) {
     // uBit.serial.send((uint8_t*)buf, read * sizeof(char), SYNC_SPINWAIT);
@@ -73,15 +73,15 @@ int remove_file(ManagedString fn)
 {
 	return MicroBitFileSystem::defaultFileSystem->remove(fn.toCharArray());
 }
-//Achtung maximal 32 Chars
 ManagedString read_to_string(ManagedString fn)
 {
-	MicroBitFile f(fn);
-	
-	char buf[32];
-	int read = 0;
-	read = f.read(buf, sizeof(buf) * sizeof(char));
-	ManagedString result = ManagedString(buf);
-	f.close();
-	return result;
+    MicroBitFile f(fn);
+    ManagedString result;
+    char buf[32];
+    int read = 0;
+    while ((read = f.read(buf, sizeof(buf) * sizeof(char))) > 0) {
+        result=result+ManagedString(buf);
+    }
+    f.close();
+    return result;
 }

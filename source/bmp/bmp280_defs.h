@@ -1,51 +1,40 @@
 /**
- * Copyright (C) 2019 Bosch Sensortec GmbH
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * Neither the name of the copyright holder nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
- * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER
- * OR CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
- * OR CONSEQUENTIAL DAMAGES(INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- * ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
- *
- * The information provided is believed to be accurate and reliable.
- * The copyright holder assumes no responsibility
- * for the consequences of use
- * of such information nor for any infringement of patents or
- * other rights of third parties which may result from its use.
- * No license is granted by implication or otherwise under any patent or
- * patent rights of the copyright holder.
- *
- * @file	bmp280_defs.h
- * @date	2018-11-9
- * @version	v3.2.0
- *
- */
-
-#ifndef __BMP280_DEFS_H__
+* Copyright (c) 2020 Bosch Sensortec GmbH. All rights reserved.
+*
+* BSD-3-Clause
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*
+* 1. Redistributions of source code must retain the above copyright
+*    notice, this list of conditions and the following disclaimer.
+*
+* 2. Redistributions in binary form must reproduce the above copyright
+*    notice, this list of conditions and the following disclaimer in the
+*    documentation and/or other materials provided with the distribution.
+*
+* 3. Neither the name of the copyright holder nor the names of its
+*    contributors may be used to endorse or promote products derived from
+*    this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+* COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+* POSSIBILITY OF SUCH DAMAGE.
+*
+* @file	bmp280_defs.h
+* @date	2020-01-10
+* @version	v3.3.4
+*
+*/#ifndef __BMP280_DEFS_H__
 #define __BMP280_DEFS_H__
 
 /*! CPP guard */
@@ -327,42 +316,27 @@ extern "C" {
 
 /*! @brief Macros to read out API revision number */
 /*Register holding custom trimming values */
-#define BMP280_ST_TRIMCUSTOM_REG               UINT8_C(0x87)
-#define BMP280_ST_TRIMCUSTOM_REG_APIREV__POS   UINT8_C(1)
-#define BMP280_ST_TRIMCUSTOM_REG_APIREV__MSK   UINT8_C(0x06)
-#define BMP280_ST_TRIMCUSTOM_REG_APIREV__LEN   UINT8_C(2)
-#define BMP280_ST_TRIMCUSTOM_REG_APIREV__REG   BMP280_ST_TRIMCUSTOM_REG
+#define BMP280_ST_TRIMCUSTOM_REG             UINT8_C(0x87)
+#define BMP280_ST_TRIMCUSTOM_REG_APIREV__POS UINT8_C(1)
+#define BMP280_ST_TRIMCUSTOM_REG_APIREV__MSK UINT8_C(0x06)
+#define BMP280_ST_TRIMCUSTOM_REG_APIREV__LEN UINT8_C(2)
+#define BMP280_ST_TRIMCUSTOM_REG_APIREV__REG BMP280_ST_TRIMCUSTOM_REG
 
 /* highest API revision supported is revision 0. */
-#define BMP280_ST_MAX_APIREVISION              UINT8_C(0x00)
+#define BMP280_ST_MAX_APIREVISION            UINT8_C(0x00)
 
 /*! @brief Macros holding the minimum and maximum for trimming values */
 /* 0x00000 is minimum output value */
-#define BMP280_ST_ADC_T_MIN                    INT32_C(0x00000)
+#define BMP280_ST_ADC_T_MIN                  INT32_C(0x00000)
 
 /* 0xFFFF0 is maximum 20-bit output value without over sampling */
-#define BMP280_ST_ADC_T_MAX                    INT32_C(0xFFFF0)
+#define BMP280_ST_ADC_T_MAX                  INT32_C(0xFFFF0)
 
 /* 0x00000 is minimum output value */
-#define BMP280_ST_ADC_P_MIN                    INT32_C(0x00000)
+#define BMP280_ST_ADC_P_MIN                  INT32_C(0x00000)
 
 /* 0xFFFF0 is maximum 20-bit output value without over sampling */
-#define BMP280_ST_ADC_P_MAX                    INT32_C(0xFFFF0)
-
-/*! @brief Macros holding the bound values for the temperature in degree celsius */
-
-#define BMP280_ST_PLAUSIBLE_TEMP_MIN           UINT8_C(0)
-#define BMP280_ST_PLAUSIBLE_TEMP_MAX           UINT8_C(40)
-
-/*! @brief Macros holding the bound values for the pressure in hPa */
-
-#define BMP280_ST_PLAUSIBLE_PRESS_MIN          UINT8_C(900)
-#define BMP280_ST_PLAUSIBLE_PRESS_MAX          UINT8_C(1100)
-
-/*! @brief Macros holding integer resolution for pressure in hpa and temperature in C measurement */
-
-#define BMP280_ST_TEMPERATURE_RESOLUTION_INT32 UINT8_C(100)
-#define BMP280_ST_PRESSURE_RESOLUTION_INT32    UINT8_C(100)
+#define BMP280_ST_ADC_P_MAX                  INT32_C(0xFFFF0)
 
 /*! @name Function pointer type definitions */
 typedef int8_t (*bmp280_com_fptr_t)(uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t len);
@@ -407,7 +381,7 @@ struct bmp280_status
 struct bmp280_uncomp_data
 {
     int32_t uncomp_temp;
-    int32_t uncomp_press;
+    uint32_t uncomp_press;
 };
 
 /*! @name API device structure */

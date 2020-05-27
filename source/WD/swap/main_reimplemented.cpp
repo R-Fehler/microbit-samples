@@ -5,6 +5,8 @@
 #include "Set.h"
 #include "TwoDigitDisplay.h"
 #include "repcount.h"
+#include "MasterParent.h"
+#include "myInput.h"
 #define INCREMENT_A 10
 #define INCREMENT_B 1
 #define INPUTLAG 70
@@ -25,12 +27,8 @@ ManagedString pausestring("pause");
 //TODO : fiber that checks for uart input. or via eventservice. so app sends "send log"
 // and microbit sends logfile to the app. independent of main thread.
 // racecondition check if file is written in main_set_input_loop() or something
-int pause_setting=PAUSEMULTIPLIKATOR;
-int inputBuff = 0;
-int inputterm = 0;
-int terminator = 0;
+
 int connected = 0;
-int goback = 0;
 
 
 
@@ -62,6 +60,7 @@ void inputButton(MicroBitEvent e) {
 			}
 		}
 	}
+
 }
 ManagedString string_from_ble() { return uart->readUntil(delimiter); }
 
@@ -166,7 +165,12 @@ int input(char message) {
 		}
 	}
 }
-///*time in 1/10 sekunden
+/**
+ * wartet time/10 sekunden auf Input, sonst previous_val
+ * @param time
+ * @param previous_val
+ * @return new inputvalue or previous_val
+ */
 int input(int time, int previous_val) {
 	int ret = previous_val;
 	int i = 0;
@@ -209,15 +213,12 @@ int input(int time, int previous_val) {
 
 	return ret;
 }
-void serial_input(MicroBitEvent e) {
-	ManagedString buffer;
-	buffer = string_from_serial();
-	uBit.serial.printf("input: %s", buffer.toCharArray());
-	// meinsatz.set_name(buffer);
-}
+
+/**
+ * Schleife in der die Saetze durchgefuerht und reps gezaehlt werden
+ */
 void main_set_input_loop() {
 
-    uBit.serial.printf("main_set_input_loop()\n");
 	int loop_case = 0;
 	int oldname;
 	while (true) {
@@ -278,60 +279,60 @@ void main_set_input_loop() {
 			break;
 		}
 	}
-	uBit.serial.printf("writeSettoFile\n");
 //	meinsatz.write_to_file(filename);  // schreibe den Satz ins file
 	uBit.sleep(500);
 	return;
 }
 /**
  * TODO das muss gelöscht werden, code smell
+ * catalog aus App lesen via UART
  */
-void catalog_read(MicroBitEvent) {
-	ManagedString exercisenumber;
-	ManagedString exercisename;
-	uBit.serial.printf("starte\n");
-	uBit.display.scroll("usb input");
-	do {
-		exercisenumber = string_from_serial();
-		uBit.sleep(5);
-		exercisename = string_from_serial();
-		uBit.sleep(5);
-		if (!remove_file(exercisenumber)) {
-			uBit.serial.printf("failed to remove file");
-
-		}
-
-
-		uBit.sleep(5);
-
-		appendLine(exercisenumber, exercisename); // jedes ID hat eig file in dem name steht
-
-		uBit.sleep(5);
-
-
-
-	} while (!(exercisenumber == ManagedString("ENDE")));
-	if (!remove_file(ManagedString("ENDE"))) {
-		uBit.serial.printf("failed to remove file");
-		uBit.serial.send(exercisenumber);
-	}
-	uBit.sleep(5);
-	uBit.serial.printf("microbit ende");
-	uBit.display.scrollAsync("mitte");
-	uBit.serial.printf("begin loop\n");
-	uBit.display.scroll("check 1:");
-	uBit.display.scroll(read_to_string(ManagedString("1")));
-	for (int i = 1; i <= 100; i++)
-	{
-		const int x = i;
-		uBit.serial.printf("%d: ", i);
-		readToSerial(ManagedString(x));
-		// uBit.display.scroll(read_to_string(x));
-	}
-	uBit.display.scrollAsync("ende");
-
-
-}
+//void catalog_read(MicroBitEvent) {
+//	ManagedString exercisenumber;
+//	ManagedString exercisename;
+//	uBit.serial.printf("starte\n");
+//	uBit.display.scroll("usb input");
+//	do {
+//		exercisenumber = string_from_serial();
+//		uBit.sleep(5);
+//		exercisename = string_from_serial();
+//		uBit.sleep(5);
+//		if (!remove_file(exercisenumber)) {
+//			uBit.serial.printf("failed to remove file");
+//
+//		}
+//
+//
+//		uBit.sleep(5);
+//
+//		appendLine(exercisenumber, exercisename); // jedes ID hat eig file in dem name steht
+//
+//		uBit.sleep(5);
+//
+//
+//
+//	} while (!(exercisenumber == ManagedString("ENDE")));
+//	if (!remove_file(ManagedString("ENDE"))) {
+//		uBit.serial.printf("failed to remove file");
+//		uBit.serial.send(exercisenumber);
+//	}
+//	uBit.sleep(5);
+//	uBit.serial.printf("microbit ende");
+//	uBit.display.scrollAsync("mitte");
+//	uBit.serial.printf("begin loop\n");
+//	uBit.display.scroll("check 1:");
+//	uBit.display.scroll(read_to_string(ManagedString("1")));
+//	for (int i = 1; i <= 100; i++)
+//	{
+//		const int x = i;
+//		uBit.serial.printf("%d: ", i);
+//		readToSerial(ManagedString(x));
+//		// uBit.display.scroll(read_to_string(x));
+//	}
+//	uBit.display.scrollAsync("ende");
+//
+//
+//}
 void onConnected(MicroBitEvent) {
 	uBit.display.scroll("C");
 
@@ -358,7 +359,9 @@ void go_back(MicroBitEvent e) {
 	goback = 2;
 	uBit.display.printCharAsync('<', 200);
 }
-
+/**
+ * set pause sollte von BLE kommen, aus App Einstellungen... nicht lokal
+ */
 void set_pause() {
     uBit.display.scroll("Pause:");
 	uint8_t pause = (uint8_t)input(pause_setting);
@@ -368,7 +371,10 @@ void set_pause() {
 
 }
 
-
+/**
+ * sollte auch von ble app kommen.
+ * @param e
+ */
 void ble_id_name(MicroBitEvent e) {
 	uBit.sleep(300);
 	uart->send("gebe Nr. ein");
@@ -386,6 +392,18 @@ void ble_id_name(MicroBitEvent e) {
 	uBit.sleep(300);
 	uBit.display.scroll(read_to_string(exercisenumber));
 }
+void printMemoryAndStop() {
+	int blockSize = 64; int i = 1;
+	uBit.serial.printf("Checking memory with blocksize %d char ...\n", blockSize);
+	while (true) {
+		char *p = (char *) malloc(blockSize);
+		if (p == NULL) break; // this actually never happens, get a panic(20) outOfMemory first
+		uBit.serial.printf("%d + %d/16 K\n", i/16, i%16);
+		++i;
+	}
+}
+
+
 int main() {
 	// Initialise the micro:bit runtime.
 	// delimiter = "\n";
@@ -398,12 +416,11 @@ int main() {
 	uBit.init();
 	uBit.serial.baud(9600);
 	uart = new MicroBitUARTService(*uBit.ble, 64, 64);  // ble service
-
 	//uBit.serial.attach(handler); if connected to serial do something: print log, read catalog, whatever
 //	uBit.io.P0.eventOn(MICROBIT_PIN_EVENT_ON_TOUCH);
 //	uBit.io.P1.eventOn(MICROBIT_PIN_EVENT_ON_TOUCH);
 //	uBit.io.P2.eventOn(MICROBIT_PIN_EVENT_ON_TOUCH);
-
+    // aktiviert resistiv touch an den pins
 	uBit.messageBus.listen(MICROBIT_ID_BUTTON_A, MICROBIT_EVT_ANY,
 		inputButton);
 	uBit.messageBus.listen(MICROBIT_ID_BUTTON_B, MICROBIT_EVT_ANY,
@@ -422,10 +439,14 @@ int main() {
 	};
 	uBit.display.print(MicroBitImage(5, 5, start));
 	initrepcount();
-//    for (int j = 0; j < 3; ++j) {
-//        int res=repcount(inputBuff, inputterm, goback, pause_setting);
-//        uart->send(ManagedString(res));
-//    }
+	uBit.sleep(5000);
+
+	ExerciseSet set=ExerciseSet();
+	set.cntReps(inputBuff, inputterm, goback, pause_setting);
+	uBit.display.scroll("done");
+	uBit.display.scroll(set.reps);
+
+
 
 
 #ifndef QUICKTEST
@@ -442,25 +463,25 @@ int main() {
 
 	ManagedString menu;
 	int menuswitch = 0;
-	while (true) {
-		if (uBit.buttonAB.isPressed()) {
-			menu = "AB";
-			menuswitch = 3;
-			break;
-		}
-		if (uBit.buttonA.isPressed()) {
-			menu = "A";
-			menuswitch = 1;
-			break;
-		}
-		if (uBit.buttonB.isPressed()) {
-			menu = "B";
-			menuswitch = 2;
-			break;
-		}
-
-		uBit.sleep(300);
-	}
+//	while (true) {
+//		if (uBit.buttonAB.isPressed()) {
+//			menu = "AB";
+//			menuswitch = 3;
+//			break;
+//		}
+//		if (uBit.buttonA.isPressed()) {
+//			menu = "A";
+//			menuswitch = 1;
+//			break;
+//		}
+//		if (uBit.buttonB.isPressed()) {
+//			menu = "B";
+//			menuswitch = 2;
+//			break;
+//		}
+//
+//		uBit.sleep(300);
+//	}
 //	switch (menuswitch)
 ////	{
 ////		// ---------MENU A
@@ -557,7 +578,6 @@ int main() {
 #ifdef BLETEST
 	if (connected == 1)
 	{
-		uart->send("gebe Name ein");
 		ManagedString buffer = string_from_ble();
 		uBit.storage.put("1", (uint8_t*)buffer.toCharArray(), sizeof(buffer.toCharArray()));
 
@@ -572,57 +592,57 @@ int main() {
 	 * so kann das aussehen wenn neuer satz kommt
 	 */
 
-	if (connected == 1) {
-		uart->send("gebe Name ein");
-		ManagedString exercisename = string_from_ble();
-		uBit.sleep(300);
-		uart->send("gebe Nr. ein");
-		ManagedString exercisenumber = string_from_ble();
-		uBit.sleep(300);
-		remove_file(exercisenumber);
-
-		uBit.sleep(300);
-
-		appendLine(exercisenumber, exercisename);
-		uBit.sleep(300);
-		readtoBLE(exercisenumber);
-		uBit.sleep(300);
-		uBit.display.scroll(read_to_string(exercisenumber));
-	}
-
-	if (connected == 1) {
-		uart->send(ManagedString("Datum: 3x T,M,J newline"));
-		meinsatz.set_date(atoi(string_from_ble().toCharArray()),
-			atoi(string_from_ble().toCharArray()),
-			atoi(string_from_ble().toCharArray()));
-		uart->send(ManagedString("ID, gewicht, reps"));
-	}
+//	if (connected == 1) {
+//		uart->send("gebe Name ein");
+//		ManagedString exercisename = string_from_ble();
+//		uBit.sleep(300);
+//		uart->send("gebe Nr. ein");
+//		ManagedString exercisenumber = string_from_ble();
+//		uBit.sleep(300);
+//		remove_file(exercisenumber);
+//
+//		uBit.sleep(300);
+//
+//		appendLine(exercisenumber, exercisename);
+//		uBit.sleep(300);
+//		readtoBLE(exercisenumber);
+//		uBit.sleep(300);
+//		uBit.display.scroll(read_to_string(exercisenumber));
+//	}
+//
+//	if (connected == 1) {
+//		uart->send(ManagedString("Datum: 3x T,M,J newline"));
+//		meinsatz.set_date(atoi(string_from_ble().toCharArray()),
+//			atoi(string_from_ble().toCharArray()),
+//			atoi(string_from_ble().toCharArray()));
+//		uart->send(ManagedString("ID, gewicht, reps"));
+//	}
 
 	/**
 	 * überlegen wie es gemacht werden soll mit rein manueller Datums eingabe. RTC zu schwer
 	 * evtl. Datum nur am Handy ändern. einfach unterschiedliche Trainings mit Datum 2099
 	 */
 
-	else {
-		uBit.display.scroll("Datum:");
-		meinsatz.set_date(input('T'), input('M'), input('J'));
-	}
-#endif // BLETEST
-	if (connected == 1) {
-		uBit.display.scrollAsync("Handy:");
-		uart->send(ManagedString("Datum: 3x T,M,J newline"));
-		meinsatz.set_date(atoi(string_from_ble().toCharArray()),
-			atoi(string_from_ble().toCharArray()),
-			atoi(string_from_ble().toCharArray()));
-		uart->send(ManagedString("fahre am Geraet fort"));
-	}
-
-	else {
-
+//	else {
 //		uBit.display.scroll("Datum:");
-		meinsatz.set_date(input("T"), input("M"), input("J"));
-
-	}
+//		meinsatz.set_date(input('T'), input('M'), input('J'));
+//	}
+#endif // BLETEST
+//	if (connected == 1) {
+//		uBit.display.scrollAsync("Handy:");
+//		uart->send(ManagedString("Datum: 3x T,M,J newline"));
+//		meinsatz.set_date(atoi(string_from_ble().toCharArray()),
+//			atoi(string_from_ble().toCharArray()),
+//			atoi(string_from_ble().toCharArray()));
+//		uart->send(ManagedString("fahre am Geraet fort"));
+//	}
+//
+//	else {
+//
+////		uBit.display.scroll("Datum:");
+//		meinsatz.set_date(input("T"), input("M"), input("J"));
+//
+//	}
 
 	uBit.messageBus.listen(MICROBIT_ID_IO_P0, MICROBIT_EVT_ANY, go_back);
     main_set_input_loop();
@@ -666,5 +686,6 @@ int main() {
 	// the scheduler. Worse case, we then sit in the idle task forever, in a
 	// power efficient sleep.
 //    uBit.sleep(50000);
-//	release_fiber();
+//	printMemoryAndStop();
+	release_fiber();
 }

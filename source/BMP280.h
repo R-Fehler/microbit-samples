@@ -27,7 +27,9 @@ extern MicroBit uBit;
 #define DEBUG_PRINT(...)
 #endif
 
- 
+ /**
+  * is really big, takes a lot of heap space!!
+  */
 /** BME280 class
  *
  *  BME280: A library to correct environmental data using Boshe BME280 device

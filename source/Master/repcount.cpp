@@ -117,7 +117,8 @@ int repcount(int& input,int& inputterm,int& goback, int& noreps_time_till_next ,
 			uBit.display.printAsync(twodigit.createImage(repcnt));
 			norepcnt = 0;
 			input = 0;
-		}
+            uart->send(ManagedString(repcnt));//TODO stattdessen evt()
+        }
 		if (res > threshold) {
 			if (rep == false) {
 				rep = true;
@@ -157,7 +158,7 @@ int repcount(int& input,int& inputterm,int& goback, int& noreps_time_till_next ,
 			if (norepcnt >= noreps_time_till_next) {
 
 			uBit.display.printChar('|');
-			for (size_t i = 0; i < 10; i++)
+			for (size_t i = 0; i < 10; i++) //TODO Magic 10 entfernen
 			{
 
 			uBit.display.rotateTo(MICROBIT_DISPLAY_ROTATION_90);
@@ -167,7 +168,6 @@ int repcount(int& input,int& inputterm,int& goback, int& noreps_time_till_next ,
 			}
 			uBit.display.clear();
 			}
-            uBit.serial.printf("////////");
             return repcnt;
 		}
 		i++;

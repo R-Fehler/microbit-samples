@@ -53,4 +53,3 @@ MicroBitImage TwoDigitDisplay::createImage(int value) {
   // uBit.display.print(ergebnis);
   return MicroBitImage(5, 5, buffer);
 }
-TwoDigitDisplay::~TwoDigitDisplay() {}

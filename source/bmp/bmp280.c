@@ -1,51 +1,40 @@
 /**
- * Copyright (C) 2019 Bosch Sensortec GmbH
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * Neither the name of the copyright holder nor the names of the
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
- * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER
- * OR CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
- * OR CONSEQUENTIAL DAMAGES(INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- * ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
- *
- * The information provided is believed to be accurate and reliable.
- * The copyright holder assumes no responsibility
- * for the consequences of use
- * of such information nor for any infringement of patents or
- * other rights of third parties which may result from its use.
- * No license is granted by implication or otherwise under any patent or
- * patent rights of the copyright holder.
- *
- * @file	bmp280.c
- * @date	2018-11-9
- * @version	v3.2.0
- *
- */
-
-#include "bmp280.h"
+* Copyright (c) 2020 Bosch Sensortec GmbH. All rights reserved.
+*
+* BSD-3-Clause
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*
+* 1. Redistributions of source code must retain the above copyright
+*    notice, this list of conditions and the following disclaimer.
+*
+* 2. Redistributions in binary form must reproduce the above copyright
+*    notice, this list of conditions and the following disclaimer in the
+*    documentation and/or other materials provided with the distribution.
+*
+* 3. Neither the name of the copyright holder nor the names of its
+*    contributors may be used to endorse or promote products derived from
+*    this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+* COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+* POSSIBILITY OF SUCH DAMAGE.
+*
+* @file	bmp280.c
+* @date	2020-01-10
+* @version	v3.3.4
+*
+*/#include "bmp280.h"
 
 /********************** Static function declarations ************************/
 
@@ -106,16 +95,6 @@ static int8_t get_calib_param(struct bmp280_dev *dev);
 static int8_t conf_sensor(uint8_t mode, const struct bmp280_config *conf, struct bmp280_dev *dev);
 
 /*!
- * @brief This internal API checks whether the calibration parameters are within the given range
- *
- * @param[in] dev : Structure instance of bmp280_dev
- *
- * @return Result of API execution status
- * @retval Zero for Success, non-zero otherwise.
- */
-static int8_t st_check_cal_param(const struct bmp280_dev *dev);
-
-/*!
  * @This internal API checks whether the uncompensated temperature and pressure are within the range
  *
  * @param[in] utemperature : uncompensated temperature
@@ -125,29 +104,6 @@ static int8_t st_check_cal_param(const struct bmp280_dev *dev);
  * @retval Zero for Success, non-zero otherwise.
  */
 static int8_t st_check_boundaries(int32_t utemperature, int32_t upressure);
-
-/*!
- * @brief This internal API checks whether the compensated temperature and pressure are within the given range based
- * on the input parameters compensated temperature and pressure
- *
- * @param[in] temperature : compensated temperature
- * @param[in] pressure : compensated pressure
- *
- * @return Result of API execution status
- * @retval Zero for Success, non-zero otherwise.
- */
-static int8_t st_check_sensor_range(int32_t temperature, uint32_t pressure);
-
-/*!
- * @brief This internal API configures the device for self test
- *
- * @param[in] conf : Configures conf.os_temp = BMP280_OS_1X, conf.os_pres = BMP280_OS_1X, BMP280_FORCED_MODE,
- * @param[in] dev : Structure instance of bmp280_dev
- *
- * @return Result of API execution status
- * @retval Zero for Success, non-zero otherwise.
- */
-static int8_t st_set_config(struct bmp280_config *conf, struct bmp280_dev *dev);
 
 /****************** User Function Definitions *******************************/
 
@@ -499,7 +455,7 @@ int8_t bmp280_get_comp_temp_32bit(int32_t *comp_temp, int32_t uncomp_temp, struc
  * @brief This API is used to get the compensated pressure from
  * uncompensated pressure. This API uses 32 bit integers.
  */
-int8_t bmp280_get_comp_pres_32bit(uint32_t *comp_pres, int32_t uncomp_pres, const struct bmp280_dev *dev)
+int8_t bmp280_get_comp_pres_32bit(uint32_t *comp_pres, uint32_t uncomp_pres, const struct bmp280_dev *dev)
 {
     int32_t var1, var2;
     int8_t rslt;
@@ -515,7 +471,7 @@ int8_t bmp280_get_comp_pres_32bit(uint32_t *comp_pres, int32_t uncomp_pres, cons
             (((dev->calib_param.dig_p3 * (((var1 / 4) * (var1 / 4)) / 8192)) / 8) +
              ((((int32_t) dev->calib_param.dig_p2) * var1) / 2)) / 262144;
         var1 = ((((32768 + var1)) * ((int32_t) dev->calib_param.dig_p1)) / 32768);
-        *comp_pres = (((uint32_t) (((int32_t)1048576) - uncomp_pres) - (var2 / 4096))) * 3125;
+        *comp_pres = (uint32_t)(((int32_t)(1048576 - uncomp_pres) - (var2 / 4096)) * 3125);
 
         /* Avoid exception caused by division with zero */
         if (var1 != 0)
@@ -530,7 +486,7 @@ int8_t bmp280_get_comp_pres_32bit(uint32_t *comp_pres, int32_t uncomp_pres, cons
                 *comp_pres = (*comp_pres / (uint32_t) var1) * 2;
             }
             var1 = (((int32_t) dev->calib_param.dig_p9) * ((int32_t) (((*comp_pres / 8) * (*comp_pres / 8)) / 8192))) /
-                   4086;
+                   4096;
             var2 = (((int32_t) (*comp_pres / 4)) * ((int32_t) dev->calib_param.dig_p8)) / 8192;
             *comp_pres = (uint32_t) ((int32_t) *comp_pres + ((var1 + var2 + dev->calib_param.dig_p7) / 16));
             rslt = BMP280_OK;
@@ -551,7 +507,7 @@ int8_t bmp280_get_comp_pres_32bit(uint32_t *comp_pres, int32_t uncomp_pres, cons
  * @brief This API is used to get the compensated pressure from
  * uncompensated pressure. This API uses 64 bit integers.
  */
-int8_t bmp280_get_comp_pres_64bit(uint32_t *pressure, int32_t uncomp_pres, const struct bmp280_dev *dev)
+int8_t bmp280_get_comp_pres_64bit(uint32_t *pressure, uint32_t uncomp_pres, const struct bmp280_dev *dev)
 {
     int64_t var1, var2, p;
     int8_t rslt;
@@ -565,11 +521,11 @@ int8_t bmp280_get_comp_pres_64bit(uint32_t *pressure, int32_t uncomp_pres, const
         var2 = var2 + (((int64_t) dev->calib_param.dig_p4) * 34359738368);
         var1 = ((var1 * var1 * (int64_t) dev->calib_param.dig_p3) / 256) +
                ((var1 * (int64_t) dev->calib_param.dig_p2) * 4096);
-        var1 = ((INT64_C(0x800000000000) + var1) * ((int64_t) dev->calib_param.dig_p1)) / 8589934592;
+        var1 = ((INT64_C(0x800000000000) + var1) * ((int64_t)dev->calib_param.dig_p1)) / 8589934592;
         if (var1 != 0)
         {
             p = 1048576 - uncomp_pres;
-            p = (((((p << 31)) - var2) * 3125) / var1);
+            p = (((((p * 2147483648U)) - var2) * 3125) / var1);
             var1 = (((int64_t) dev->calib_param.dig_p9) * (p / 8192) * (p / 8192)) / 33554432;
             var2 = (((int64_t) dev->calib_param.dig_p8) * p) / 524288;
             p = ((p + var1 + var2) / 256) + (((int64_t)dev->calib_param.dig_p7) * 16);
@@ -624,7 +580,7 @@ int8_t bmp280_get_comp_temp_double(double *temperature, int32_t uncomp_temp, str
  * @brief This API is used to get the compensated pressure from
  * uncompensated pressure. This API uses double floating precision.
  */
-int8_t bmp280_get_comp_pres_double(double *pressure, int32_t uncomp_pres, const struct bmp280_dev *dev)
+int8_t bmp280_get_comp_pres_double(double *pressure, uint32_t uncomp_pres, const struct bmp280_dev *dev)
 {
     double var1, var2;
     int8_t rslt;
@@ -636,17 +592,17 @@ int8_t bmp280_get_comp_pres_double(double *pressure, int32_t uncomp_pres, const 
         var2 = var1 * var1 * ((double) dev->calib_param.dig_p6) / 32768.0;
         var2 = var2 + var1 * ((double) dev->calib_param.dig_p5) * 2.0;
         var2 = (var2 / 4.0) + (((double) dev->calib_param.dig_p4) * 65536.0);
-        var1 =
-            (((double) dev->calib_param.dig_p3) * var1 * var1 / 524288.0 + ((double) dev->calib_param.dig_p2) * var1) /
-            524288.0;
+        var1 = (((double)dev->calib_param.dig_p3) * var1 * var1 / 524288.0 + ((double)dev->calib_param.dig_p2) * var1) /
+               524288.0;
         var1 = (1.0 + var1 / 32768.0) * ((double) dev->calib_param.dig_p1);
-        uncomp_pres = (uint32_t)(1048576.0 - (double) uncomp_pres);
+
+        *pressure = 1048576.0 - (double)uncomp_pres;
         if (var1 < 0 || var1 > 0)
         {
-            uncomp_pres = (uint32_t)((uncomp_pres - (var2 / 4096.0)) * 6250.0 / var1);
-            var1 = ((double) dev->calib_param.dig_p9) * uncomp_pres * uncomp_pres / 2147483648.0;
-            var2 = uncomp_pres * ((double) dev->calib_param.dig_p8) / 32768.0;
-            *pressure = (uncomp_pres + (var1 + var2 + ((double) dev->calib_param.dig_p7)) / 16.0);
+            *pressure = (*pressure - (var2 / 4096.0)) * 6250.0 / var1;
+            var1 = ((double)dev->calib_param.dig_p9) * (*pressure) * (*pressure) / 2147483648.0;
+            var2 = (*pressure) * ((double)dev->calib_param.dig_p8) / 32768.0;
+            *pressure = *pressure + (var1 + var2 + ((double)dev->calib_param.dig_p7)) / 16.0;
         }
         else
         {
@@ -684,48 +640,6 @@ uint8_t bmp280_compute_meas_time(const struct bmp280_dev *dev)
     }
 
     return (uint8_t)period;
-}
-
-/*!
- * @brief This API performs self-test to check whether compensated temperature and pressure are within the range
- */
-int8_t bmp280_selftest(struct bmp280_dev *dev)
-{
-    struct bmp280_config conf;
-    struct bmp280_uncomp_data uncom;
-    int32_t temperature = 0;
-    uint32_t pressure = 0;
-    int8_t rslt;
-
-    /* reset sensor to reset all settings to defaults */
-    rslt = bmp280_soft_reset(dev);
-    if (rslt == BMP280_OK)
-    {
-        rslt = st_set_config(&conf, dev);
-        dev->delay_ms(10);
-        if (rslt == BMP280_OK)
-        {
-            /* read uncompensated results */
-            rslt = bmp280_get_uncomp_data(&uncom, dev);
-            if (rslt == BMP280_OK)
-            {
-                /* Get compensated temperature */
-                rslt = bmp280_get_comp_temp_32bit(&temperature, uncom.uncomp_temp, dev);
-                if (rslt == BMP280_OK)
-                {
-                    /* Get compensated pressure */
-                    rslt = bmp280_get_comp_pres_32bit(&pressure, uncom.uncomp_press, dev);
-                    if (rslt == BMP280_OK)
-                    {
-                        /* Checks compensated temperature and pressure are within the range */
-                        rslt = st_check_sensor_range(temperature, pressure);
-                    }
-                }
-            }
-        }
-    }
-
-    return rslt;
 }
 
 /****************** Static Function Definitions *******************************/
@@ -860,62 +774,6 @@ static int8_t conf_sensor(uint8_t mode, const struct bmp280_config *conf, struct
 }
 
 /*!
- * @brief This internal API checks whether the calibration parameters are within the given range
- */
-static int8_t st_check_cal_param(const struct bmp280_dev *dev)
-{
-    int8_t rslt = 0;
-
-    /* check if calibration parameters are in permitted range */
-    if ((dev->calib_param.dig_t1 < BMP280_ST_DIG_T1_MIN) || (dev->calib_param.dig_t1 > BMP280_ST_DIG_T1_MAX))
-    {
-        rslt = BMP280_E_CAL_PARAM_RANGE;
-    }
-    if ((dev->calib_param.dig_t2 < BMP280_ST_DIG_T2_MIN) || (dev->calib_param.dig_t2 > BMP280_ST_DIG_T2_MAX))
-    {
-        rslt = BMP280_E_CAL_PARAM_RANGE;
-    }
-    if ((dev->calib_param.dig_t3 < BMP280_ST_DIG_T3_MIN) || (dev->calib_param.dig_t3 > BMP280_ST_DIG_T3_MAX))
-    {
-        rslt = BMP280_E_CAL_PARAM_RANGE;
-    }
-    if ((dev->calib_param.dig_p1 < BMP280_ST_DIG_P1_MIN) || (dev->calib_param.dig_p1 > BMP280_ST_DIG_P1_MAX))
-    {
-        rslt = BMP280_E_CAL_PARAM_RANGE;
-    }
-    if ((dev->calib_param.dig_p2 < BMP280_ST_DIG_P2_MIN) || (dev->calib_param.dig_p2 > BMP280_ST_DIG_P2_MAX))
-    {
-        rslt = BMP280_E_CAL_PARAM_RANGE;
-    }
-    if ((dev->calib_param.dig_p3 < BMP280_ST_DIG_P3_MIN) || (dev->calib_param.dig_p3 > BMP280_ST_DIG_P3_MAX))
-    {
-        rslt = BMP280_E_CAL_PARAM_RANGE;
-    }
-    if ((dev->calib_param.dig_p4 < BMP280_ST_DIG_P4_MIN) || (dev->calib_param.dig_p4 > BMP280_ST_DIG_P4_MAX))
-    {
-        rslt = BMP280_E_CAL_PARAM_RANGE;
-    }
-    if ((dev->calib_param.dig_p5 < BMP280_ST_DIG_P5_MIN) || (dev->calib_param.dig_p5 > BMP280_ST_DIG_P5_MAX))
-    {
-        rslt = BMP280_E_CAL_PARAM_RANGE;
-    }
-    if ((dev->calib_param.dig_p6 < BMP280_ST_DIG_P6_MIN) || (dev->calib_param.dig_p6 > BMP280_ST_DIG_P6_MAX))
-    {
-        rslt = BMP280_E_CAL_PARAM_RANGE;
-    }
-    if ((dev->calib_param.dig_p8 < BMP280_ST_DIG_P8_MIN) || (dev->calib_param.dig_p8 > BMP280_ST_DIG_P8_MAX))
-    {
-        rslt = BMP280_E_CAL_PARAM_RANGE;
-    }
-    if ((dev->calib_param.dig_p9 < BMP280_ST_DIG_P9_MIN) || (dev->calib_param.dig_p9 > BMP280_ST_DIG_P9_MAX))
-    {
-        rslt = BMP280_E_CAL_PARAM_RANGE;
-    }
-
-    return rslt;
-}
-
-/*!
  * @This internal API checks whether the uncompensated temperature and pressure are within the range
  */
 static int8_t st_check_boundaries(int32_t utemperature, int32_t upressure)
@@ -939,64 +797,6 @@ static int8_t st_check_boundaries(int32_t utemperature, int32_t upressure)
     else
     {
         rslt = BMP280_OK;
-    }
-
-    return rslt;
-}
-
-/*!
- * @brief This internal API checks whether the compensated temperature and pressure are within the given range
- */
-static int8_t st_check_sensor_range(int32_t temperature, uint32_t pressure)
-{
-    int8_t rslt = -1;
-
-    /* check for temperature measurement plausibility */
-    if ((temperature < BMP280_ST_PLAUSIBLE_TEMP_MIN) ||
-        (temperature > (BMP280_ST_PLAUSIBLE_TEMP_MAX * BMP280_ST_TEMPERATURE_RESOLUTION_INT32)))
-    {
-        /* implausible temperature */
-        rslt = BMP280_E_IMPLAUS_TEMP;
-    }
-    if (rslt != BMP280_E_IMPLAUS_TEMP)
-    {
-        /* check for pressure measurement plausibility */
-        if ((pressure < (BMP280_ST_PLAUSIBLE_PRESS_MIN * BMP280_ST_PRESSURE_RESOLUTION_INT32)) ||
-            (pressure > (BMP280_ST_PLAUSIBLE_PRESS_MAX * BMP280_ST_PRESSURE_RESOLUTION_INT32)))
-        {
-            /* implausible pressure */
-            rslt = BMP280_E_IMPLAUS_PRESS;
-        }
-        else
-        {
-            rslt = BMP280_OK;
-        }
-    }
-
-    return rslt;
-}
-
-/*!
- * @brief This internal API configures the device for self test
- */
-static int8_t st_set_config(struct bmp280_config *conf, struct bmp280_dev *dev)
-{
-    int8_t rslt;
-
-    /* check validity of calibration parameters against known bounds, skip check */
-    /* if bounds are newer than this code (indicated by api_revision number) */
-    rslt = st_check_cal_param(dev);
-    if (rslt == BMP280_OK)
-    {
-        /* communication and trimming are OK, proceed to measurement */
-        conf->os_temp = BMP280_OS_1X;
-        conf->os_pres = BMP280_OS_1X;
-        rslt = bmp280_set_config(conf, dev);
-        if (rslt == BMP280_OK)
-        {
-            /* set forced mode, wait for completion, read results */
-            rslt = bmp280_set_power_mode(BMP280_FORCED_MODE, dev);
-        }
     }
 
     return rslt;

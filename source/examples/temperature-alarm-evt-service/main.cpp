@@ -14,7 +14,7 @@ uint16_t set_lower  = 9001;
 uint16_t set_upper  = 9002;
 uint16_t cold       = 1;
 uint16_t hot        = 2;
-uint8_t  upper      = 24;// evt.value ist eh byte[2]
+uint8_t  upper      = 30;// evt.value ist eh byte[2]
 uint8_t  lower      = 19;
 int reading_count   = 0;
 

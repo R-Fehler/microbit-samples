@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++17-extensions"
 #if !defined(TWODIGITDISPLAY_H)
 #define TWODIGITDISPLAY_H
 #include "MicroBitImage.h"
@@ -5,7 +7,7 @@
 extern MicroBit uBit;
 class TwoDigitDisplay {
  private:
-  const uint8_t bin_digits_second[10][5]{
+  inline static constexpr uint8_t bin_digits_second[10][5]{
       {
           0b00011,
           0b00011,
@@ -78,7 +80,7 @@ class TwoDigitDisplay {
       },
   };
 
-  const uint8_t bin_digits_first[10][5]{
+  inline static constexpr uint8_t bin_digits_first[10][5]{
       {
           0b11000,
           0b11000,
@@ -151,9 +153,9 @@ class TwoDigitDisplay {
       },
   };
 
- public:
-  MicroBitImage createImage(int value);
   TwoDigitDisplay();
-  ~TwoDigitDisplay();
+ public:
+  static MicroBitImage createImage(int value);
 };
 #endif
+#pragma clang diagnostic pop
