@@ -196,6 +196,10 @@ int main()
                 }
         }
 
+        if(abs(maxValue-meanValue)<decidingDelta && abs(minValue - meanValue)<decidingDelta){
+            decision='n';
+        }
+
 
         uBit.serial.printf("%d\n", newSensorDataFiltered);
         uBit.display.printCharAsync(decision);
