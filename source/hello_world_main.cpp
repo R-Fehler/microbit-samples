@@ -126,20 +126,27 @@ int main()
     //Buffer for 10 seconds with 6.25Hz
     uint8_t sensor_comp = BMP3_PRESS | BMP3_TEMP;
     rslt = bmp3_get_sensor_data(sensor_comp, &data, &dev);
-    uBit.sleep(100);
+    uBit.sleep(160);
+    rslt = bmp3_get_sensor_data(sensor_comp, &data, &dev);
+    uBit.sleep(160);
     rslt = bmp3_get_sensor_data(sensor_comp, &data, &dev);
 
     std::deque<int64_t> filteredSensorData(60,data.pressure);
-
+    std::deque<int64_t> negativeFilteredSensorData(filteredSensorData.size(),-data.pressure);
 
     const int filtersize = 5;
     std::deque<int64_t> filterBuffer(filtersize,data.pressure);
 
 
     int64_t newSensorDataFiltered = data.pressure;
-    int64_t sumOfFilterBuffer = data.pressure;
+    int64_t negativeNewSDF =-data.pressure;
     std::set<int64_t> uniquePeakValues;
 
+    int64_t meanValue=data.pressure;
+    int64_t maxValue=data.pressure;
+    int64_t minValue=data.pressure;
+    int decidingDelta=400;
+    char decision='n';//no decision ; u for up eg deadlift, d for down eg squat
     int counter = 0;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
@@ -149,30 +156,51 @@ int main()
         filterBuffer.pop_front();
         filterBuffer.push_back((int64_t)data.pressure);
 
-        newSensorDataFiltered = std::accumulate(filterBuffer.begin(), filterBuffer.end(), 0) / filtersize;
-
+        newSensorDataFiltered = std::accumulate(filterBuffer.begin(), filterBuffer.end(), (int64_t) 0) / filtersize;
+        negativeNewSDF=-newSensorDataFiltered;
         filteredSensorData.pop_front();
         filteredSensorData.push_back(newSensorDataFiltered);
+        negativeFilteredSensorData.pop_front();
+        negativeFilteredSensorData.push_back(negativeNewSDF);
         std::vector<int> indexOfPeaksInFilteredSD;
-        //if(counter%filtersize==0)
-        {
+        std::vector<int> indexOfPeaksInNegFilteredSD;
+
+
+        meanValue=std::accumulate(filteredSensorData.begin(),filteredSensorData.end(),(int64_t)0)/filteredSensorData.size();
+        maxValue=*max_element(filteredSensorData.begin(),filteredSensorData.end());
+        minValue=*min_element(filteredSensorData.begin(),filteredSensorData.end());
+
+        if(((abs(maxValue-meanValue)>decidingDelta && abs(minValue-meanValue)<decidingDelta) && decision=='n') or decision=='d'){
+            decision='d';
+
             Peaks::findPeaks({filteredSensorData.begin(), filteredSensorData.end()}, indexOfPeaksInFilteredSD, 0);
-            for (int index : indexOfPeaksInFilteredSD)
-            {
-                if(index>5 && index<filteredSensorData.size()-10){
+            for (int index : indexOfPeaksInFilteredSD) {
+                if (index > 5 && index < filteredSensorData.size() - 10) {
 
-                auto setReturn = uniquePeakValues.insert(filteredSensorData[index]);
-                if (setReturn.second)
-                {
+                    auto ret = uniquePeakValues.insert(filteredSensorData[index]);
 
-                }
                 }
             }
+
+        }
+        else if(((abs(maxValue-meanValue)<decidingDelta && abs(minValue-meanValue)>decidingDelta) && decision=='n') or decision=='u'){
+            decision='u';
+        Peaks::findPeaks({negativeFilteredSensorData.begin(), negativeFilteredSensorData.end()}, indexOfPeaksInNegFilteredSD, 0);
+
+                for (int index : indexOfPeaksInNegFilteredSD) {
+                    if (index > 5 && index < filteredSensorData.size() - 10) {
+
+                        auto ret = uniquePeakValues.insert(filteredSensorData[index]);
+
+                    }
+                }
         }
 
+
         uBit.serial.printf("%d\n", newSensorDataFiltered);
+        uBit.display.printCharAsync(decision);
         int reps = static_cast<int>(uniquePeakValues.size());
-        uBit.display.printAsync(reps);
+        if(counter%12==0)uBit.display.printAsync(reps);
         uBit.sleep(140);
         counter++;
     }
