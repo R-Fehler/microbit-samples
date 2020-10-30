@@ -1,3 +1,14 @@
+Firmware für BLE Sensor Hardware der Android App
+===================================
+hier befindet sich der WIP Firmware Code für die App:
+[Link Android App](https://github.com/R-Fehler/MyRealmRecyclerView)
+
+[link to actual code](./source)
+
+
+
+
+
 # microbit-samples
 
 A collection of example programs using the micro:bit runtime.
