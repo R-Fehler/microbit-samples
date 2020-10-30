@@ -10,7 +10,7 @@ using namespace std;
 
 namespace Peaks {
     const int64_t EPS =1;
-    void findPeaks(const vector<int64_t> &x0, vector<int> &peakInds, int SetID);
+    void findPeaks(const vector<int64_t> &xInput, vector<int> &peakOutputInds, int SetID);
 }
 
 #endif

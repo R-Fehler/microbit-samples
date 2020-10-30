@@ -33,6 +33,7 @@ DEALINGS IN THE SOFTWARE.
 #include <deque>
 #include <set>
 #include "peaks/peaks.h"
+#include "TwoDigitDisplay.h"
 MicroBit uBit;
 void delay_ms(uint32_t period_ms);
 int8_t i2c_reg_write(uint8_t i2c_addr, uint8_t reg_addr, uint8_t *reg_data, uint16_t length);
@@ -94,6 +95,7 @@ int main()
 {
     // Initialise the micro:bit runtime.
     uBit.init();
+    uBit.display.rotateTo(MICROBIT_DISPLAY_ROTATION_180);
 
     //Entwurf der Klasse
     /**
@@ -134,7 +136,7 @@ int main()
     std::deque<int64_t> filteredSensorData(60,data.pressure);
     std::deque<int64_t> negativeFilteredSensorData(filteredSensorData.size(),-data.pressure);
 
-    const int filtersize = 5;
+    const int filtersize = 6;
     std::deque<int64_t> filterBuffer(filtersize,data.pressure);
 
 
@@ -145,7 +147,7 @@ int main()
     int64_t meanValue=data.pressure;
     int64_t maxValue=data.pressure;
     int64_t minValue=data.pressure;
-    int decidingDelta=400;
+    int decidingDelta=280;
     char decision='n';//no decision ; u for up eg deadlift, d for down eg squat
     int counter = 0;
 #pragma clang diagnostic push
@@ -169,13 +171,13 @@ int main()
         meanValue=std::accumulate(filteredSensorData.begin(),filteredSensorData.end(),(int64_t)0)/filteredSensorData.size();
         maxValue=*max_element(filteredSensorData.begin(),filteredSensorData.end());
         minValue=*min_element(filteredSensorData.begin(),filteredSensorData.end());
-
+        //TODO Filter index that are too close to each other. eg smaller than 5 samples keep the first
         if(((abs(maxValue-meanValue)>decidingDelta && abs(minValue-meanValue)<decidingDelta) && decision=='n') or decision=='d'){
             decision='d';
 
             Peaks::findPeaks({filteredSensorData.begin(), filteredSensorData.end()}, indexOfPeaksInFilteredSD, 0);
             for (int index : indexOfPeaksInFilteredSD) {
-                if (index > 5 && index < filteredSensorData.size() - 10) {
+                if (index > 10 && index < filteredSensorData.size() - 1) { // must be > 5 like in peaks.cpp minDistanceOfPeaks
 
                     auto ret = uniquePeakValues.insert(filteredSensorData[index]);
 
@@ -188,7 +190,7 @@ int main()
         Peaks::findPeaks({negativeFilteredSensorData.begin(), negativeFilteredSensorData.end()}, indexOfPeaksInNegFilteredSD, 0);
 
                 for (int index : indexOfPeaksInNegFilteredSD) {
-                    if (index > 5 && index < filteredSensorData.size() - 10) {
+                    if (index > 10 && index < filteredSensorData.size() - 1) {
 
                         auto ret = uniquePeakValues.insert(filteredSensorData[index]);
 
@@ -204,7 +206,8 @@ int main()
         uBit.serial.printf("%d\n", newSensorDataFiltered);
         uBit.display.printCharAsync(decision);
         int reps = static_cast<int>(uniquePeakValues.size());
-        if(counter%12==0)uBit.display.printAsync(reps);
+        uBit.display.clear();
+        uBit.display.print(TwoDigitDisplay::createImage(reps));
         uBit.sleep(140);
         counter++;
     }
