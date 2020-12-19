@@ -1,3 +1,7 @@
+
+
+
+
 Firmware für BLE Sensor Hardware der Android App
 ===================================
 hier befindet sich der WIP Firmware Code für die App:
@@ -5,6 +9,10 @@ hier befindet sich der WIP Firmware Code für die App:
 
 [link to actual code](./source)
 
+#### Main Loop for User Input and Connection to Android Phone
+hier : [main_new: User Input](./source/Master/main_new.cpp) 
+#### Main for the BMP380 and Counting Algorithm
+hier : [BMP380Main: Counting Algorithm](./source/hello_world_main.cpp) 
 
 
 readme der microbit runtime & build & debug process
